@@ -1,0 +1,71 @@
+SYSTEM:
+You are evaluating a generated review for quality and authenticity.
+Score each dimension 0.0–1.0 with one decimal place.
+Be strict — 0.9+ requires exceptional quality; 0.5 means adequate.
+
+REVIEW TO SCORE:
+"{{ review_text }}"
+
+TARGET USER PROFILE:
+- Emotional style: {{ emotional_style }}
+- Topic focus: {{ topic_focus | join(", ") if topic_focus else "none specified" }}
+- Expected word range: {{ verbosity_word_range[0] }}–{{ verbosity_word_range[1] }} words
+- Actual word count: {{ review_text.split() | length }}
+{% if naija_vibe_mode %}
+- Region: {{ region }}
+- Naija Slang Index: {{ slang_index }} (0=formal English, 1=heavy Pidgin)
+{% endif %}
+
+ITEM CONTEXT:
+- Name: {{ item_name }}
+- Category: {{ item_category }}
+{% if naija_vibe_mode and nigerian_category %}
+- Nigerian category: {{ nigerian_category }}
+{% endif %}
+
+SCORING DIMENSIONS:
+
+{% if naija_vibe_mode %}
+1. CULTURAL AUTHENTICITY — Does this sound like a real Nigerian wrote it?
+   Pidgin usage must match Slang Index {{ slang_index }} — penalise forced/incorrect
+   Pidgin heavily. Penalise generic AI phrasing ("great place", "highly recommend") heavily.
+
+2. CULTURAL ACCURACY — Are Nigerian-specific details correct for this region/category?
+   Correct food names, place references, regional slang, culturally plausible context.
+   Score 0.5 if region is Unknown (cannot verify accuracy).
+
+3. PERSONA CONSISTENCY — Does tone, length, topics, and rating match the profile?
+   Emotional style must be {{ emotional_style }}. Word count must be in
+   {{ verbosity_word_range[0] }}–{{ verbosity_word_range[1] }} range.
+   Review should mention user's usual topics: {{ topic_focus | join(", ") if topic_focus else "N/A" }}.
+{% else %}
+1. CULTURAL AUTHENTICITY — Does this sound like a real person (not generic AI)?
+   Natural phrasing, personal voice, specific observations. Penalise "great place",
+   "highly recommend", "5 stars", and other hollow filler phrases heavily.
+
+2. CULTURAL ACCURACY — Are item-specific details accurate and contextually appropriate?
+   Correct category terminology, plausible attributes, no hallucinated specifics.
+
+3. PERSONA CONSISTENCY — Does tone, length, topics, and rating match the profile?
+   Emotional style must be {{ emotional_style }}. Word count must be in
+   {{ verbosity_word_range[0] }}–{{ verbosity_word_range[1] }} range.
+   Review should mention user's usual topics: {{ topic_focus | join(", ") if topic_focus else "N/A" }}.
+{% endif %}
+
+ABEG SCORE (compute this yourself):
+abeg_score = round(0.4 × cultural_authenticity + 0.35 × cultural_accuracy + 0.25 × persona_consistency, 2)
+
+Return ONLY valid JSON. No markdown, no text outside the JSON object.
+
+OUTPUT FORMAT:
+{
+  "cultural_authenticity": <0.0–1.0>,
+  "cultural_accuracy": <0.0–1.0>,
+  "persona_consistency": <0.0–1.0>,
+  "abeg_score": <0.0–1.0>,
+  "notes": {
+    "authenticity": "<one specific observation>",
+    "accuracy": "<one specific observation>",
+    "consistency": "<one specific observation>"
+  }
+}

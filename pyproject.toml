@@ -1,0 +1,136 @@
+[tool.poetry]
+name = "naijareview"
+version = "0.1.0"
+description = "NaijaReview Intelligence — LangGraph agents for Nigerian-contextualised review generation and recommendation"
+authors = ["Team Panthers <team@naiview.dev>"]
+readme = "README.md"
+packages = [{include = "naijareview"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+# ─── Core Framework ──────────────────────────
+langchain-core = ">=0.3.0"
+langgraph = ">=0.3.0"
+google-generativeai = ">=0.8.0"
+
+# ─── Auth / Security ─────────────────────────
+python-jose = {extras = ["cryptography"], version = ">=3.3.0"}
+
+# ─── Database ─────────────────────────────────
+sqlmodel = ">=0.0.21"
+
+# ─── API Layer ───────────────────────────────
+fastapi = ">=0.115.0"
+uvicorn = {extras = ["standard"], version = ">=0.32.0"}
+pydantic = ">=2.9.0"
+pydantic-settings = ">=2.6.0"
+
+# ─── Templating & Logging ───────────────────
+Jinja2 = ">=3.1.4"
+structlog = ">=24.4.0"
+pyyaml = ">=6.0.2"
+httpx = ">=0.28.0"
+
+# ─── Auth ────────────────────────────────────
+passlib = {extras = ["bcrypt"], version = ">=1.7.4"}
+
+[tool.poetry.group.ml.dependencies]
+# Heavy ML dependencies — install with: poetry install --with ml
+langchain-google-genai = ">=2.0.0"
+langchain-community = ">=0.3.0"
+chromadb = ">=0.5.0"
+faiss-cpu = ">=1.8.0"
+sentence-transformers = ">=3.3.0"
+rank-bm25 = ">=0.2.2"
+spacy = ">=3.8.0"
+vaderSentiment = ">=3.3.2"
+redis = ">=5.2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.3.0"
+pytest-cov = ">=5.0.0"
+pytest-asyncio = ">=0.24.0"
+ruff = ">=0.8.0"
+mypy = ">=1.13.0"
+pre-commit = ">=4.0.0"
+ipykernel = ">=6.29.0"
+
+[tool.poetry.group.eval.dependencies]
+rouge-score = ">=0.1.2"
+bert-score = ">=0.3.13"
+scikit-learn = ">=1.5.0"
+pandas = ">=2.2.0"
+matplotlib = ">=3.9.0"
+seaborn = ">=0.13.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+# ──────────────────────────────────────────────
+# Ruff (linter + formatter)
+# ──────────────────────────────────────────────
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["naijareview", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "SIM",  # flake8-simplify
+    "RUF",  # ruff-specific rules
+]
+ignore = ["E501"]  # line-length handled by formatter
+
+[tool.ruff.lint.isort]
+known-first-party = ["naijareview"]
+
+# ──────────────────────────────────────────────
+# Mypy
+# ──────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = [
+    "chromadb.*",
+    "faiss.*",
+    "rank_bm25.*",
+    "vaderSentiment.*",
+    "rouge_score.*",
+    "bert_score.*",
+    "sentence_transformers.*",
+    "langchain_core.*",
+    "langchain_google_genai.*",
+    "langchain_community.*",
+    "langgraph.*",
+    "google.generativeai.*",
+    "google.api_core.*",
+    "passlib.*",
+    "jose.*",
+]
+ignore_missing_imports = true
+
+# ──────────────────────────────────────────────
+# Pytest
+# ──────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -q --strict-markers"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks integration tests requiring running services",
+    "eval: marks evaluation harness tests",
+]

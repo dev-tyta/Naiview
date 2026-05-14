@@ -1,0 +1,3 @@
+# Data directory — gitignored contents
+# Raw and processed datasets are NOT committed to git.
+# See §2 (Repository Layout) in docs/INTERNAL_ARCHITECTURE.md.

@@ -1,0 +1,60 @@
+SYSTEM:
+{% if naija_vibe_mode %}
+A generated review scored below the Nigerian authenticity threshold.
+Rewrite it with stronger cultural resonance while preserving the same
+factual content, sentiment, and user style profile. Do not add false
+claims about the item.
+{% else %}
+A generated review scored below the persona-consistency threshold.
+Rewrite it to better match the user's documented style while preserving
+the same factual content and sentiment. Do not add false claims.
+{% endif %}
+
+ORIGINAL REVIEW:
+"{{ original_review }}"
+
+ORIGINAL RATING: {{ original_rating }}
+
+VIBE SCORE BREAKDOWN:
+- Cultural Authenticity: {{ vibe_score.cultural_authenticity }} / 1.0
+- Cultural Accuracy:     {{ vibe_score.cultural_accuracy }} / 1.0
+- Persona Consistency:   {{ vibe_score.persona_consistency }} / 1.0
+- Composite (Abeg) Score: {{ vibe_score.abeg_score }} / 1.0  ← must reach 0.70
+
+WEAKEST DIMENSION: {{ weakest_dimension }}
+
+TARGETED GUIDANCE:
+{{ regen_hint }}
+
+USER FINGERPRINT SUMMARY:
+{{ fingerprint_summary }}
+
+{% if naija_vibe_mode %}
+REGION: {{ region }}
+{% if region != "Unknown" %}
+Regional markers to consider: {{ regional_markers | join(", ") }}
+{% endif %}
+{% endif %}
+
+WHAT TO FIX (priority order):
+{% if weakest_dimension == "cultural_authenticity" %}
+1. Inject more {{ "Nigerian/Pidgin phrasing" if naija_vibe_mode else "user-characteristic phrasing" }} — match Slang Index {{ slang_index }}.
+2. Replace generic AI phrases with specific, personal observations.
+{% elif weakest_dimension == "cultural_accuracy" %}
+1. Ensure {{ "regional references, food names, and context are correct for " + region if naija_vibe_mode else "item-specific details are accurate and plausible" }}.
+2. Remove any culturally mismatched or invented specifics.
+{% else %}
+1. Match the user's emotional style ({{ emotional_style }}) and verbosity ({{ verbosity_word_range[0] }}–{{ verbosity_word_range[1] }} words).
+2. Ensure the rating ({{ original_rating }}) aligns with the tone of the text.
+{% endif %}
+
+CONSTRAINTS:
+- Preserve original rating unless tone fundamentally changes.
+- Word count must be {{ verbosity_word_range[0] }}–{{ verbosity_word_range[1] }} words.
+- Return ONLY valid JSON. No markdown, no explanation outside the JSON.
+
+OUTPUT FORMAT:
+{
+  "review": "<the improved review text>",
+  "rating": <number 1.0–5.0, one decimal place>
+}

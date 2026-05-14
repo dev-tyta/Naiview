@@ -1,0 +1,49 @@
+# ──────────────────────────────────────────────
+# Yelp → Nigerian Category Taxonomy
+# ──────────────────────────────────────────────
+# Owner: Shiloh
+# See §4.7 apply_nigerian_taxonomy in INTERNAL_ARCHITECTURE.md
+#
+# Format: "Yelp/Amazon Category": "Nigerian Equivalent"
+# Falls back to original category if no mapping exists.
+# ──────────────────────────────────────────────
+
+# ─── Food & Restaurants ──────────────────────
+"Restaurants": "Chop House"
+"Fast Food": "Quick Chop"
+"Burgers": "Burger Joint"
+"Pizza": "Pizza Spot"
+"Seafood": "Fish & Seafood"
+"Bakeries": "Bakery"
+"Coffee & Tea": "Café"
+"Breakfast & Brunch": "Morning Chop"
+"Bars": "Bar / Lounge"
+"Nightlife": "Night Spot"
+"Food Trucks": "Roadside Chop"
+"Ice Cream & Frozen Yogurt": "Ice Cream Spot"
+"Juice Bars & Smoothies": "Juice Bar"
+"Steakhouses": "Steak & Grill"
+"Sushi Bars": "Sushi Spot"
+
+# ─── Nigerian-Specific ──────────────────────
+"Nigerian": "Naija Kitchen"
+"African": "African Kitchen"
+"West African": "West African Kitchen"
+
+# ─── Services ────────────────────────────────
+"Beauty & Spas": "Salon & Spa"
+"Hair Salons": "Hair Studio"
+"Barbers": "Barbing Salon"
+"Shopping": "Market / Mall"
+"Hotels & Travel": "Hotel"
+"Automotive": "Mechanic / Auto"
+"Home Services": "Home Service"
+"Health & Medical": "Hospital / Clinic"
+"Education": "School / Training"
+
+# ─── Entertainment ───────────────────────────
+"Arts & Entertainment": "Entertainment"
+"Active Life": "Recreation"
+"Fitness & Instruction": "Gym / Fitness"
+
+# TODO: Shiloh — expand this with more Yelp categories from the dataset
