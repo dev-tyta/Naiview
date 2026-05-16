@@ -19,6 +19,8 @@ class ReviewOutput(BaseModel):
     vibe_breakdown: dict[str, float] | None = None
     naija_vibe_mode_active: bool = False
     retry_count: int = 0
+    # Returned so callers can persist and reuse for history accumulation
+    user_id: str = ""
 
 
 class RecommendationOutput(BaseModel):
@@ -31,3 +33,5 @@ class RecommendationOutput(BaseModel):
     diversity_score: float = 0.0
     follow_up_question: str | None = None
     naija_vibe_mode_active: bool = False
+    # Returned so callers can persist and reuse for history accumulation
+    user_id: str = ""

@@ -46,7 +46,7 @@ class Settings(BaseSettings):
 
     # ─── FAISS ────────────────────────────────────
     faiss_index_path: Path = Path("./data/processed/faiss_index")
-    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    embedding_model: str = "BAAI/bge-m3"
 
     # ─── Redis (Fingerprint Cache) ────────────────
     redis_url: str = "redis://localhost:6379/0"

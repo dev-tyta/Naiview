@@ -1,0 +1,46 @@
+{
+  "Lagos": [
+    "VI",
+    "Lekki",
+    "Surulere",
+    "Ikeja",
+    "Oshodi",
+    "Mainland",
+    "Island",
+    "Lagos Island",
+    "Agege"
+  ],
+  "Abuja": [
+    "Wuse",
+    "Garki",
+    "Maitama",
+    "Gwarinpa",
+    "Asokoro",
+    "FCT",
+    "Abuja",
+    "Central Area"
+  ],
+  "Port Harcourt": [
+    "PH",
+    "Port Harcourt",
+    "GRA",
+    "Rumuola",
+    "Rumuokoro",
+    "Trans Amadi"
+  ],
+  "Kano": [
+    "Kano",
+    "Nassarawa",
+    "Fagge",
+    "Sabon Gari",
+    "Tarauni",
+    "Gwale"
+  ],
+  "Enugu": [
+    "Enugu",
+    "GRA Enugu",
+    "Independence Layout",
+    "Ogui",
+    "New Haven"
+  ]
+}

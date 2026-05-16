@@ -105,21 +105,23 @@ class EpisodicMemory:
         review_text = review.text or ""
         embedding = self._embed_provider.embed(review_text)
 
-        collection.add(
+        # upsert instead of add — idempotent for generated reviews with stable IDs
+        collection.upsert(
             embeddings=[embedding],
             documents=[review_text],
             metadatas=[
                 {
                     "user_id": review.user_id,
                     "item_id": review.item_id,
-                    "stars": review.stars,
+                    "stars": float(review.stars),
                     "timestamp": review.timestamp.isoformat(),
                     "item_category": review.item_category,
+                    "source": getattr(review, "source", "generated"),
                 }
             ],
             ids=[review.review_id],
         )
-        logger.debug("Review %s saved to episodic memory", review.review_id)
+        logger.debug("Review %s upserted to episodic memory (user=%s)", review.review_id, review.user_id)
 
     # ── Internals ────────────────────────────────────────────────────────
 

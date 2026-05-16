@@ -1,0 +1,212 @@
+{
+  "Buka / Mama Put": {
+    "description": "Local Nigerian restaurant serving traditional meals",
+    "yelp_equivalents": [
+      "Restaurants",
+      "African",
+      "Ethnic Food"
+    ],
+    "keywords": [
+      "local food",
+      "swallow",
+      "soup",
+      "eba",
+      "amala",
+      "fufu",
+      "pounded yam",
+      "egusi",
+      "jollof",
+      "banga"
+    ],
+    "example_tone": "This mama put na the best for the area, the egusi soup dey sweet die!"
+  },
+  "Suya Joint / Street Food": {
+    "description": "Outdoor grilling spots serving suya, roasted meat, and street snacks",
+    "yelp_equivalents": [
+      "Sandwiches",
+      "Burgers",
+      "Food Stands",
+      "Street Vendors",
+      "Barbeque"
+    ],
+    "keywords": [
+      "suya",
+      "roasted",
+      "grilled",
+      "street food",
+      "pepper",
+      "kilishi",
+      "stick meat",
+      "asun",
+      "point and kill"
+    ],
+    "example_tone": "The suya wey dem sell for this place na top tier, e pepper well well!"
+  },
+  "Eateries (Mr Biggs-style)": {
+    "description": "Fast casual Nigerian restaurant chains and quick service spots",
+    "yelp_equivalents": [
+      "Fast Food",
+      "Breakfast & Brunch",
+      "Cafes",
+      "Chicken Wings"
+    ],
+    "keywords": [
+      "fast food",
+      "chicken",
+      "chips",
+      "rice",
+      "quick service",
+      "affordable",
+      "snacks",
+      "puff puff",
+      "meat pie"
+    ],
+    "example_tone": "The meat pie no reach before, dem don reduce the size sha"
+  },
+  "Pepper Soup Spot": {
+    "description": "Restaurants and bars specialising in pepper soup, fish, and assorted meats",
+    "yelp_equivalents": [
+      "Seafood",
+      "Bars",
+      "Nightlife",
+      "Soup"
+    ],
+    "keywords": [
+      "pepper soup",
+      "fish",
+      "catfish",
+      "point and kill",
+      "assorted",
+      "goat meat",
+      "oxtail",
+      "spicy",
+      "fresh fish"
+    ],
+    "example_tone": "The catfish pepper soup hot well well, e enter body!"
+  },
+  "Beer Parlour": {
+    "description": "Local bars and drinking spots serving alcohol and light food",
+    "yelp_equivalents": [
+      "Bars",
+      "Nightlife",
+      "Pubs",
+      "Breweries"
+    ],
+    "keywords": [
+      "beer",
+      "cold drink",
+      "stout",
+      "lager",
+      "pepper soup",
+      "relaxation",
+      "chill",
+      "owambe",
+      "small chops"
+    ],
+    "example_tone": "The cold beer dey always available, no be small thing"
+  },
+  "Open Market Stall": {
+    "description": "Market vendors selling fresh produce, ingredients, and household goods",
+    "yelp_equivalents": [
+      "Grocery",
+      "Specialty Food",
+      "Farmers Market",
+      "Market Stalls"
+    ],
+    "keywords": [
+      "market",
+      "fresh",
+      "tomatoes",
+      "pepper",
+      "onions",
+      "cheap",
+      "wholesale",
+      "provisions",
+      "foodstuff"
+    ],
+    "example_tone": "The price for this market reasonable pass Shoprite, e make sense"
+  },
+  "Confectionery / Bakery": {
+    "description": "Bakeries and dessert spots selling cakes, bread, and pastries",
+    "yelp_equivalents": [
+      "Bakeries",
+      "Desserts",
+      "Ice Cream & Frozen Yogurt",
+      "Cupcakes"
+    ],
+    "keywords": [
+      "cake",
+      "bread",
+      "pastry",
+      "sweet",
+      "celebration cake",
+      "chin chin",
+      "cookies",
+      "birthday cake"
+    ],
+    "example_tone": "The cake wey dem bake na original, e sweet die!"
+  },
+  "Canteen / Bukateria": {
+    "description": "Office and school canteens serving affordable daily meals",
+    "yelp_equivalents": [
+      "Coffee & Tea",
+      "Cafes",
+      "Sandwiches",
+      "Salad"
+    ],
+    "keywords": [
+      "canteen",
+      "office lunch",
+      "affordable",
+      "daily food",
+      "rice and stew",
+      "beans",
+      "yam",
+      "budget"
+    ],
+    "example_tone": "For this price the food fill body, e better pass outside"
+  },
+  "Guesthouse / Lodge": {
+    "description": "Budget hotels, guesthouses, and lodges across Nigerian cities",
+    "yelp_equivalents": [
+      "Hotels & Travel",
+      "Hotels",
+      "Bed & Breakfast"
+    ],
+    "keywords": [
+      "hotel",
+      "lodge",
+      "guesthouse",
+      "room",
+      "generator",
+      "AC",
+      "wifi",
+      "security",
+      "clean",
+      "value for money"
+    ],
+    "example_tone": "The generator no carry light at all, e spoil the whole stay"
+  },
+  "Beauty / Salon": {
+    "description": "Hair salons, nail salons, and beauty service providers",
+    "yelp_equivalents": [
+      "Hair Salons",
+      "Nail Salons",
+      "Beauty & Spas",
+      "Skin Care",
+      "Hair Removal"
+    ],
+    "keywords": [
+      "hair",
+      "weave",
+      "braid",
+      "locs",
+      "relaxer",
+      "nails",
+      "gel",
+      "natural hair",
+      "styling"
+    ],
+    "example_tone": "The aunty wey do my hair na wizard, e come out fine!"
+  }
+}
