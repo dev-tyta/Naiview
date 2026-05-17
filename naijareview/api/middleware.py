@@ -1,6 +1,6 @@
 """Request middleware — logging, request IDs, error handling.
 
-See §14 of INTERNAL_ARCHITECTURE.md.
+14 of INTERNAL_ARCHITECTURE.md.
 """
 
 from __future__ import annotations
@@ -18,9 +18,7 @@ logger = structlog.get_logger()
 class RequestIDMiddleware(BaseHTTPMiddleware):
     """Inject a unique request_id into every request for structured logging."""
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         request_id = str(uuid.uuid4())
         structlog.contextvars.bind_contextvars(request_id=request_id)
 

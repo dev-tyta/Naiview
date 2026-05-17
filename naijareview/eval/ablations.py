@@ -1,6 +1,6 @@
 """Ablation variant runner.
 
-See §12.4 of INTERNAL_ARCHITECTURE.md.
+12.4 of INTERNAL_ARCHITECTURE.md.
 """
 
 from __future__ import annotations

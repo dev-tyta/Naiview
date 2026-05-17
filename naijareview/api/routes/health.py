@@ -1,6 +1,6 @@
 """Health check endpoint — used by Docker, load balancers, and CI probes.
 
-See §13.3 of INTERNAL_ARCHITECTURE.md.
+13.3 of INTERNAL_ARCHITECTURE.md.
 """
 
 from __future__ import annotations

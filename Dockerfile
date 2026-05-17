@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir poetry==1.8.4
 
 # ─── Copy dependency files first (cache layer) ─
 COPY pyproject.toml poetry.lock* ./
-RUN poetry install --no-root --only main
+RUN poetry install --no-root --with ml
 
 # ─── Copy application code ───────────────────
 COPY naijareview/ naijareview/
@@ -28,7 +28,7 @@ COPY data/phrase_library/ data/phrase_library/
 COPY data/taxonomy.yaml data/taxonomy.yaml
 
 # ─── Install package ─────────────────────────
-RUN poetry install --only main
+RUN poetry install --with ml
 
 # ─── Download spaCy model ────────────────────
 RUN python -m spacy download en_core_web_sm

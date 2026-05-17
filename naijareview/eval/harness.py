@@ -122,6 +122,99 @@ class AgentProtocol(ABC):
 # ── Stub Agents ───────────────────────────────────────────────────────────────
 
 
+class RealAgent(AgentProtocol):
+    """Wraps the compiled LangGraph agents for real evaluation runs.
+
+    Usage:
+        agent = RealAgent()
+        output = agent.run_task_a(inp)  # invokes build_task_a_graph()
+        output = agent.run_task_b(inp)  # invokes build_task_b_graph()
+    """
+
+    _task_a_graph = None
+    _task_b_graph = None
+
+    def _get_task_a_graph(self):
+        if RealAgent._task_a_graph is None:
+            from naijareview.agents.task_a import build_task_a_graph
+
+            RealAgent._task_a_graph = build_task_a_graph()
+        return RealAgent._task_a_graph
+
+    def _get_task_b_graph(self):
+        if RealAgent._task_b_graph is None:
+            from naijareview.agents.task_b import build_task_b_graph
+
+            RealAgent._task_b_graph = build_task_b_graph()
+        return RealAgent._task_b_graph
+
+    def run_task_a(self, inp: TaskAInput) -> TaskAOutput:
+        graph = self._get_task_a_graph()
+        initial_state = {
+            "user_id": inp.user_id,
+            "item": {
+                "item_id": inp.item_id,
+                "name": inp.item_metadata.get("name", ""),
+                "category": inp.item_metadata.get("category", "general"),
+                "attributes": inp.item_metadata.get("attributes", {}),
+                "avg_rating": inp.item_metadata.get("avg_rating", 0.0),
+                "review_count": inp.item_metadata.get("review_count", 0),
+                "description": inp.item_metadata.get("description"),
+            },
+            "naija_vibe_mode": inp.context.get("naija_vibe_mode", False),
+            "retry_count": 0,
+            "few_shot_examples": [],
+            "errors": [],
+            "trace": [],
+        }
+        final = graph.invoke(initial_state)
+        vibe = final.get("vibe_score")
+        return TaskAOutput(
+            generated_review=final.get("final_review") or "",
+            predicted_rating=final.get("final_rating") or 0.0,
+            confidence=final.get("confidence") or 0.0,
+            fingerprint_match=final.get("fingerprint_match_summary") or "",
+            style_notes=final.get("style_notes") or "",
+            abeg_score=float(vibe.abeg_score) if vibe else None,
+            latency_ms=0.0,
+        )
+
+    def run_task_b(self, inp: TaskBInput) -> TaskBOutput:
+        graph = self._get_task_b_graph()
+        initial_state = {
+            "user_id": inp.user_id,
+            "context_query": inp.query,
+            "conversation_history": inp.conversation_history,
+            "naija_vibe_mode": inp.context.get("naija_vibe_mode", False),
+            "is_cold_start": inp.is_cold_start,
+            "cold_start_turn_count": 0,
+            "follow_up_turn_count": 0,
+            "candidate_pool": [],
+            "reranked_candidates": [],
+            "recommendations": [],
+            "errors": [],
+            "trace": [],
+        }
+        final = graph.invoke(initial_state)
+        return TaskBOutput(
+            recommendations=[
+                {
+                    "item_id": r.item.item_id,
+                    "name": r.item.name,
+                    "score": r.rank,
+                    "reasoning": r.explanation,
+                }
+                for r in final.get("recommendations", [])
+            ],
+            reasoning=final.get("reasoning") or "",
+            confidence=final.get("confidence") or 0.0,
+            cold_start_mode=final.get("is_cold_start", False),
+            diversity_score=final.get("diversity_score") or 0.0,
+            clarifying_question=final.get("follow_up_question"),
+            latency_ms=0.0,
+        )
+
+
 class StubAgent(AgentProtocol):
     """Schema-valid dummy outputs — keeps the harness green before real logic exists."""
 
@@ -146,25 +239,76 @@ class StubAgent(AgentProtocol):
         )
 
 
+# ── Metric factory helpers ────────────────────────────────────────────────
+
+
+def _make_task_a_metric(name: str):
+    """Return a lambda that calls the real metric function for Task A.
+
+    Falls back to 0.0 if the metric module isn't available.
+    """
+
+    def _score(out: TaskAOutput, gt: dict) -> float:
+        try:
+            if name == "rouge_l":
+                from naijareview.eval.metrics.rouge import compute_rouge_l
+
+                return compute_rouge_l(out.generated_review, gt.get("review_text", ""))
+            if name == "bert_score":
+                from naijareview.eval.metrics.bertscore import compute_bert_score
+
+                return compute_bert_score(out.generated_review, gt.get("review_text", ""))
+        except Exception:
+            pass
+        return 0.0
+
+    return _score
+
+
+def _make_task_b_metric(name: str):
+    """Return a lambda that calls the real metric function for Task B.
+
+    Falls back to 0.0 if the metric module isn't available.
+    """
+
+    def _score(out: TaskBOutput, gt: dict) -> float:
+        try:
+            predicted_ids = [r.get("item_id", "") for r in out.recommendations]
+            true_ids = gt.get("relevant_ids", [])
+
+            if name == "ndcg":
+                from naijareview.eval.metrics.ndcg import compute_ndcg_at_k
+
+                return compute_ndcg_at_k(predicted_ids, true_ids, k=10)
+            if name == "hit_rate":
+                from naijareview.eval.metrics.hit_at_k import compute_hit_at_k
+
+                return float(compute_hit_at_k(predicted_ids, true_ids, k=5))
+        except Exception:
+            pass
+        return 0.0
+
+    return _score
+
+
 # ── Metrics Registry ──────────────────────────────────────────────────────────
 
 
 class MetricsRegistry:
     """
-    All scorers live here. Replace each stub lambda with real implementation.
-    Each scorer fn signature: (output, ground_truth) -> float
+    All scorers live here. Each scorer fn signature: (output, ground_truth) -> float
     """
 
     TASK_A_METRICS = {
-        "rouge_l": lambda out, gt: 0.0,  # TODO: wire rouge-score lib
-        "bert_score_f1": lambda out, gt: 0.0,  # TODO: wire bert-score lib
+        "rouge_l": _make_task_a_metric("rouge_l"),
+        "bert_score_f1": _make_task_a_metric("bert_score"),
         "rating_mae": lambda out, gt: abs(out.predicted_rating - gt["rating"]),
         "abeg_score": lambda out, gt: out.abeg_score or 0.0,
     }
 
     TASK_B_METRICS = {
-        "ndcg_at_10": lambda out, gt: 0.0,  # TODO
-        "hit_rate_at_5": lambda out, gt: 0.0,  # TODO
+        "ndcg_at_10": _make_task_b_metric("ndcg"),
+        "hit_rate_at_5": _make_task_b_metric("hit_rate"),
         "diversity_score": lambda out, gt: out.diversity_score,
         "cold_start_hit": lambda out, gt: float(
             out.cold_start_mode and len(out.recommendations) > 0
@@ -338,10 +482,12 @@ def load_fixtures(task: str) -> list[dict]:
 def resolve_agent(name: str, module_path: str | None) -> AgentProtocol:
     if name == "stub":
         return StubAgent()
+    if name == "real":
+        return RealAgent()
     if module_path:
         mod = importlib.import_module(module_path)
         return mod.Agent()  # each real agent module exposes Agent()
-    raise ValueError(f"Unknown agent '{name}'. Pass --agent-module for real agents.")
+    raise ValueError(f"Unknown agent '{name}'. Use 'stub' or 'real', or pass --agent-module.")
 
 
 if __name__ == "__main__":

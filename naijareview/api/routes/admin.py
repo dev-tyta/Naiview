@@ -1,6 +1,6 @@
 """Admin routes — development-only endpoints for debugging and introspection.
 
-See §13.3 of INTERNAL_ARCHITECTURE.md.
+13.3 of INTERNAL_ARCHITECTURE.md.
 """
 
 from __future__ import annotations
