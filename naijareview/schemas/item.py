@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -12,7 +14,7 @@ class Item(BaseModel):
     name: str
     category: str
     nigerian_category: str | None = None  # From taxonomy overlay
-    attributes: dict[str, str] = Field(default_factory=dict)
+    attributes: dict[str, Any] = Field(default_factory=dict)
     avg_rating: float = 0.0
     review_count: int = 0
     description: str | None = None
