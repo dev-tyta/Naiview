@@ -18,16 +18,40 @@ class PersonaAuthor:
 
     def author(
         self,
-        fingerprint: Fingerprint,
-        region: RegionProfile,
-        item: Item,
+        fingerprint: "Fingerprint",
+        region: "RegionProfile",
+        item: "Item",
         intensity: Literal["natural", "amplified"] = "natural",
     ) -> str:
-        """Return the persona-section text for the prompt.
+        """Return the persona-section text for the prompt."""
+        word_lo, word_hi = fingerprint.verbosity_word_range
+        topics = ", ".join(fingerprint.topic_focus) if fingerprint.topic_focus else "various topics"
 
-        intensity='amplified' is used when Naija Vibe Mode is active and
-        we're retrying after a low score — it dials up the Nigerian register
-        instructions and selects stronger few-shot examples.
-        """
-        # TODO: Implement — build persona block from fingerprint dims
-        raise NotImplementedError
+        if fingerprint.generosity_score > 0.65:
+            gen_label = "very generous (tends to rate high)"
+        elif fingerprint.generosity_score < 0.40:
+            gen_label = "critical (tends to rate low)"
+        else:
+            gen_label = "balanced"
+
+        block = (
+            f"Write as a {fingerprint.emotional_style} reviewer who focuses on {topics}. "
+            f"Keep word count between {word_lo}–{word_hi} words. "
+            f"This reviewer is {gen_label} with ratings. "
+        )
+
+        if region.region != "Unknown" and region.confidence >= 0.4:
+            block += f"They are based in {region.region}. "
+
+        if intensity == "amplified":
+            block += (
+                "AMPLIFY Nigerian register: use more Pidgin, local food references, "
+                "and regional expressions. Make it unmistakably Nigerian."
+            )
+        elif fingerprint.naija_slang_index > 0.05:
+            block += (
+                f"Naija slang index is {fingerprint.naija_slang_index:.2f} — "
+                "sprinkle natural Pidgin expressions where fitting."
+            )
+
+        return block

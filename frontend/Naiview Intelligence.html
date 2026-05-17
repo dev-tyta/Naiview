@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Naiview Intelligence · Culturally-Aware LLM Agent</title>
+  <meta name="description" content="Naiview Intelligence — a two-task LLM agent system built around Nigerian behavioural patterns. DSN × BCT Hackathon 3.0." />
+  <meta name="theme-color" content="#0D0D0F" />
+  <meta property="og:title" content="Naiview Intelligence" />
+  <meta property="og:description" content="Culturally-aware LLM agent for Nigerian user modelling and recommendations." />
+  <meta property="og:type" content="website" />
+
+  <!-- Favicon from logo SVG -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230D0D0F'/%3E%3Cpath d='M6 24V8h3l9 11V8h3v16h-3L9 13v11H6z' fill='%23E8E6E3'/%3E%3Ccircle cx='26' cy='9' r='3.5' fill='%2300D4AA'/%3E%3C/svg%3E">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="src/styles.css" />
+  <link rel="stylesheet" href="src/components.css" />
+
+  <!-- Runtime config — edit env.js to set API base URL -->
+  <script src="env.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React (pinned) -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- Translations (must load before components) -->
+  <script src="src/translations.js"></script>
+
+  <!-- Shared primitives -->
+  <script type="text/babel" src="src/components/shared.jsx"></script>
+  <script type="text/babel" src="src/components/nav.jsx"></script>
+  <script type="text/babel" src="src/components/radar.jsx"></script>
+
+  <!-- Pages -->
+  <script type="text/babel" src="src/pages/landing.jsx"></script>
+  <script type="text/babel" src="src/pages/task-a.jsx"></script>
+  <script type="text/babel" src="src/pages/task-b.jsx"></script>
+  <script type="text/babel" src="src/pages/architecture.jsx"></script>
+  <script type="text/babel" src="src/pages/paper.jsx"></script>
+  <script type="text/babel" src="src/pages/evaluation.jsx"></script>
+
+  <!-- App -->
+  <script type="text/babel" src="src/app.jsx"></script>
+</body>
+</html>

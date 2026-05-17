@@ -1,0 +1,56 @@
+{
+  "power_supply": [
+    "generator",
+    "light",
+    "NEPA",
+    "PHCN",
+    "power",
+    "electricity",
+    "no light",
+    "fuel"
+  ],
+  "value_for_money": [
+    "price",
+    "affordable",
+    "expensive",
+    "cheap",
+    "overpriced",
+    "value",
+    "worth it",
+    "e no reach",
+    "too costly"
+  ],
+  "area_reputation": [
+    "VI",
+    "Victoria Island",
+    "Lekki",
+    "Surulere",
+    "Ikeja",
+    "Abuja",
+    "PH",
+    "Port Harcourt",
+    "Kano",
+    "Enugu",
+    "Lagos Island",
+    "Mainland"
+  ],
+  "parking_security": [
+    "parking",
+    "security",
+    "safe",
+    "oga",
+    "area boys",
+    "gateman",
+    "CCTV"
+  ],
+  "service_quality": [
+    "customer service",
+    "rude",
+    "friendly",
+    "fast",
+    "slow",
+    "waited",
+    "attend to",
+    "customer care"
+  ]
+}

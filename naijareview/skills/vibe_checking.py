@@ -26,13 +26,18 @@ class NaijaVibeChecker:
     def score(
         self,
         review_text: str,
-        fingerprint: Fingerprint,
-        item: Item,
+        fingerprint: "Fingerprint",
+        item: "Item",
         mode: Literal["passive", "active"],
-    ) -> VibeScore:
+    ) -> "VibeScore":
         """Compute the full Vibe Score for a generated review."""
-        # TODO: Implement — lexical + LLM-judged scoring
-        raise NotImplementedError
+        from naijareview.tools.vibe import run_naija_vibe_check
+        return run_naija_vibe_check.invoke({
+            "review_text": review_text,
+            "target_fingerprint": fingerprint,
+            "item": item,
+            "mode": mode,
+        })
 
     def should_regenerate(
         self,
@@ -47,7 +52,26 @@ class NaijaVibeChecker:
             and retry_count < self.max_retries
         )
 
-    def regeneration_hint(self, score: VibeScore) -> str:
+    def regeneration_hint(self, score: "VibeScore") -> str:
         """Return a prompt-additive hint based on the weakest sub-score."""
-        # TODO: Implement — identify weakest dimension, produce targeted hint
-        raise NotImplementedError
+        dims = {
+            "cultural_authenticity": score.cultural_authenticity,
+            "cultural_accuracy": score.cultural_accuracy,
+            "persona_consistency": score.persona_consistency,
+        }
+        weakest = min(dims, key=lambda k: dims[k])
+        hints = {
+            "cultural_authenticity": (
+                "Increase Nigerian cultural authenticity: add more Pidgin expressions, "
+                "local food references (suya, jollof, pepper soup), and Naija idioms."
+            ),
+            "cultural_accuracy": (
+                "Improve cultural accuracy: ensure regional references are correct, "
+                "use appropriate Naija cultural context for this business type."
+            ),
+            "persona_consistency": (
+                "Better match the user's documented style: adjust word count, "
+                "emotional tone, and topic focus to align with their fingerprint."
+            ),
+        }
+        return hints[weakest]

@@ -55,9 +55,46 @@ class TaskAState(TypedDict, total=False):
 
 
 def build_task_a_graph():
-    """Build and compile the Task A LangGraph.
+    """Build and compile the Task A LangGraph."""
+    from langgraph.graph import END, StateGraph
+    from naijareview.agents.nodes.task_a_nodes import (
+        analyse_item, apply_taxonomy, assemble_prompt, author_persona,
+        build_fingerprint, decide_after_vibe_check, detect_region,
+        fetch_few_shots, finalise_output, generate_draft,
+        load_history, plan_regeneration, vibe_check,
+    )
 
-    Returns a compiled StateGraph ready for invocation.
-    """
-    # TODO: Implement — wire up nodes, conditional edges per §6.2
-    raise NotImplementedError("Task A graph not yet implemented")
+    graph: StateGraph = StateGraph(TaskAState)
+
+    graph.add_node("load_history", load_history)
+    graph.add_node("build_fingerprint", build_fingerprint)
+    graph.add_node("detect_region", detect_region)
+    graph.add_node("analyse_item", analyse_item)
+    graph.add_node("apply_taxonomy", apply_taxonomy)
+    graph.add_node("fetch_few_shots", fetch_few_shots)
+    graph.add_node("author_persona", author_persona)
+    graph.add_node("assemble_prompt", assemble_prompt)
+    graph.add_node("generate_draft", generate_draft)
+    graph.add_node("vibe_check", vibe_check)
+    graph.add_node("plan_regeneration", plan_regeneration)
+    graph.add_node("finalise_output", finalise_output)
+
+    graph.set_entry_point("load_history")
+    graph.add_edge("load_history", "build_fingerprint")
+    graph.add_edge("build_fingerprint", "detect_region")
+    graph.add_edge("detect_region", "analyse_item")
+    graph.add_edge("analyse_item", "apply_taxonomy")
+    graph.add_edge("apply_taxonomy", "fetch_few_shots")
+    graph.add_edge("fetch_few_shots", "author_persona")
+    graph.add_edge("author_persona", "assemble_prompt")
+    graph.add_edge("assemble_prompt", "generate_draft")
+    graph.add_edge("generate_draft", "vibe_check")
+    graph.add_conditional_edges(
+        "vibe_check",
+        decide_after_vibe_check,
+        {"plan_regeneration": "plan_regeneration", "finalise_output": "finalise_output"},
+    )
+    graph.add_edge("plan_regeneration", "author_persona")
+    graph.add_edge("finalise_output", END)
+
+    return graph.compile()

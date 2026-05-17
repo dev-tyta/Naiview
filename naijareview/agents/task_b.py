@@ -60,5 +60,65 @@ def build_task_b_graph():
 
     Returns a compiled StateGraph ready for invocation.
     """
-    # TODO: Implement — wire up nodes, conditional edges per §7.2
-    raise NotImplementedError("Task B graph not yet implemented")
+    from langgraph.graph import END, StateGraph
+    from naijareview.agents.nodes.task_b_nodes import (
+        apply_taxonomy_batch, bootstrap_fingerprint, check_user_history,
+        cold_start_complete, cold_start_or_normal, cold_start_turn,
+        compute_confidence, confidence_gate, detect_region,
+        finalise, gen_clarifying_question, generate_explanations,
+        build_fingerprint, load_history, retrieve_candidates,
+        rerank, run_diversity_check,
+    )
+
+    graph: StateGraph = StateGraph(TaskBState)
+
+    graph.add_node("check_user_history", check_user_history)
+    graph.add_node("cold_start_turn", cold_start_turn)
+    graph.add_node("load_history", load_history)
+    graph.add_node("build_fingerprint", build_fingerprint)
+    graph.add_node("detect_region", detect_region)
+    graph.add_node("bootstrap_fingerprint", bootstrap_fingerprint)
+    graph.add_node("retrieve_candidates", retrieve_candidates)
+    graph.add_node("rerank", rerank)
+    graph.add_node("run_diversity_check", run_diversity_check)
+    graph.add_node("apply_taxonomy_batch", apply_taxonomy_batch)
+    graph.add_node("generate_explanations", generate_explanations)
+    graph.add_node("compute_confidence", compute_confidence)
+    graph.add_node("finalise", finalise)
+    graph.add_node("gen_clarifying_question", gen_clarifying_question)
+
+    graph.set_entry_point("check_user_history")
+    graph.add_conditional_edges(
+        "check_user_history",
+        cold_start_or_normal,
+        {"cold_start_turn": "cold_start_turn", "load_history": "load_history"},
+    )
+
+    # Cold-start path: loop until persona complete, then bootstrap
+    graph.add_conditional_edges(
+        "cold_start_turn",
+        cold_start_complete,
+        {"bootstrap_fingerprint": "bootstrap_fingerprint", "cold_start_turn": END},
+    )
+    graph.add_edge("bootstrap_fingerprint", "retrieve_candidates")
+
+    # Normal path: history → fingerprint → region → retrieve
+    graph.add_edge("load_history", "build_fingerprint")
+    graph.add_edge("build_fingerprint", "detect_region")
+    graph.add_edge("detect_region", "retrieve_candidates")
+
+    # Shared path: retrieve → rerank → diversity → taxonomy → explanations → confidence → gate
+    graph.add_edge("retrieve_candidates", "rerank")
+    graph.add_edge("rerank", "run_diversity_check")
+    graph.add_edge("run_diversity_check", "apply_taxonomy_batch")
+    graph.add_edge("apply_taxonomy_batch", "generate_explanations")
+    graph.add_edge("generate_explanations", "compute_confidence")
+    graph.add_conditional_edges(
+        "compute_confidence",
+        confidence_gate,
+        {"finalise": "finalise", "gen_clarifying_question": "gen_clarifying_question"},
+    )
+    graph.add_edge("finalise", END)
+    graph.add_edge("gen_clarifying_question", END)
+
+    return graph.compile()

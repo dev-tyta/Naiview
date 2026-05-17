@@ -140,7 +140,7 @@ docs/
 | Phrase library data | Shiloh | ⚪ Empty | Populate `data/phrase_library/` |
 | Nigerian lang module | Shiloh | 🟡 Stubs | Implement |
 | Eval harness + metrics | Aaliyah | 🟡 Stubs | Implement §12 |
-| Frontend React UI | Testimony | ⚪ Not started | — |
+| Frontend HTML prototype | Testimony | 🟡 Stub | Wire real API calls (backend must be live) |
 | Synthetic corpus pipeline | Shiloh + Testimony | ⚪ Not started | — |
 
 Legend: ⚪ Not started | 🟡 Stub/WIP | ✅ Implemented | 🔒 Tested
@@ -533,13 +533,36 @@ python -c "import secrets; print(secrets.token_hex(32))"
 - **Mode gate pattern**: `if state.get("naija_vibe_mode", False):` — always default to False.
 - **Password rule**: `UserAccount.hashed_password = hash_password(raw)` — raw never persisted.
 
+- **[2026-05-17] [Claude Sonnet 4.6]** — **Frontend prototype hardened.** Key changes across `frontend/`:
+  - **`env.js`** (new) — runtime API base URL config. Edit `window.__NAIVIEW_CONFIG__.apiBaseUrl` to point at the backend. `demoMode: true` falls back to mock data when backend is unreachable.
+  - **`.env.example`** (new) — documents `VITE_API_BASE_URL` for the future Vite migration.
+  - **`src/translations.js`** (new) — full EN ↔ Pidgin translation map for all UI strings (`nav`, `taskA`, `taskB`, `landing`, `footer`). Access via `const t = TRANSLATIONS[vibe ? "pidgin" : "en"]`.
+  - **`src/app.jsx`** — global `apiPost(path, body)` helper reads base URL from `env.js`. All pages now receive `{vibe, setVibe, navigate}` props. `isDemoMode()` exposed globally.
+  - **`src/components/nav.jsx`** — translation-aware nav links and footer labels. Mobile menu now shows X icon when open. Vibe toggle in mobile drawer. Proper `aria-current`, `aria-expanded`, `aria-label` on all nav elements.
+  - **`src/components/shared.jsx`** — added `ErrorBanner` (API failure display with retry), `SkeletonLine` (shimmer placeholder). `Reveal` now respects `prefers-reduced-motion`. All interactive elements have `aria-label`.
+  - **`src/pages/task-a.jsx`** — real API call to `POST /task-a/generate` via `apiPost`. Falls back to mock in demo mode. Maps `result.fingerprint` array to radar chart. Maps `result.reasoning_trace` to step display. Sticky input panel, skeleton loading state, `ErrorBanner`.
+  - **`src/pages/task-b.jsx`** — real API calls to `POST /task-b/recommend` and `POST /task-b/cold-start`. Cold-start progress bar. `RecsOutput` component handles both existing-user and cold-start output identically. Sticky input panel, skeleton recs loading, `ErrorBanner`. Cold-start questions switch to Pidgin when vibe mode is toggled.
+  - **`src/styles.css`** — added `:focus-visible` ring (2px teal, 3px offset), `prefers-reduced-motion` block (disables all animations), `.error-banner`, `.skeleton-line` shimmer, `.sr-only`, `.skip-link`, `.vibe-row`. Min-height uses `100dvh`.
+  - **`src/components.css`** — `panel-sticky` (sticky input column on desktop), `cold-start-progress` bar, improved mobile breakpoints, burger icon animates between ☰ / ✕, `nav-mobile-vibe` slot.
+
 ### Known Issues
 
 - All tool implementations (16 tools in `naijareview/tools/`) are still stubs — highest priority work.
 - Task A and Task B graph nodes are empty — implement after tools and skills.
 - `UserAccount` registry now backed by SQLite via SQLModel (see `naijareview/db/`).
   Switch `DATABASE_URL` in `.env` to `postgres://...` for production.
+- Frontend prototype is HTML+in-browser Babel — production migration to Vite+TS per `frontend/HANDOFF.md` not yet started.
+
+### Patterns
+
+- **State immutability**: `{**state, "field": value}` — never mutate in-place.
+- **Error taxonomy**: `UserNotFoundError`, `InsufficientHistoryError`, `LLMRateLimitError`, `LLMAPIError`, `RetrievalEmptyError`, `VibeScorerError` — see §14.3 of architecture doc.
+- **Fallback principle**: Failed component → lower confidence, not crashed request.
+- **Mode gate pattern**: `if state.get("naija_vibe_mode", False):` — always default to False.
+- **Password rule**: `UserAccount.hashed_password = hash_password(raw)` — raw never persisted.
+- **Frontend API base URL**: read from `window.__NAIVIEW_CONFIG__.apiBaseUrl` (set in `frontend/env.js`). Never hardcode.
+- **Frontend translations**: `const t = TRANSLATIONS[vibe ? "pidgin" : "en"].namespace` — all user-visible strings must go through this.
 
 ---
 
-*Last updated: 2026-05-14 by Claude Sonnet 4.6*
+*Last updated: 2026-05-17 by Claude Sonnet 4.6*
