@@ -28,8 +28,9 @@ class LLMRouter:
     """Route LLM calls to the appropriate tier with retry logic.
 
     Exposes two public LangChain model instances for direct chain composition:
-        router.generation_llm  — Gemini 2.5 Pro  (Sonnet equivalent)
-        router.utility_llm     — Gemini 2.0 Flash (Haiku equivalent)
+
+        router.generation_llm  — Gemini 2.5 Pro  (generation tier)
+        router.utility_llm     — Gemini 2.0 Flash (utility tier)
     """
 
     def __init__(self) -> None:
@@ -98,7 +99,6 @@ class LLMRouter:
                 err = str(exc).lower()
                 is_rate = "429" in err or "quota" in err or "rate" in err
                 is_server = "500" in err or "503" in err or "server" in err
-
                 if (is_rate or is_server) and attempt < max_retries:
                     wait = 2**attempt
                     logger.warning(
@@ -111,5 +111,4 @@ class LLMRouter:
                     sleep(wait)
                     continue
                 raise
-
         raise RuntimeError("Exhausted retries")
