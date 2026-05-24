@@ -9,4 +9,8 @@
 window.__NAIVIEW_CONFIG__ = {
   apiBaseUrl: "http://localhost:9000",
   demoMode: true,
+
+  // Solution paper Drive links — paste your Google Drive share URLs here
+  paperLinkA: "",   // Task A: Review Generation paper
+  paperLinkB: "",   // Task B: Recommendation paper
 };
