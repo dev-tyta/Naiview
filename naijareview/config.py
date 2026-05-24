@@ -30,23 +30,29 @@ class Settings(BaseSettings):
     # ─── LLM Call Configuration ───────────────────
     llm_max_retries: int = 2
     llm_default_temperature: float = 0.7
-    llm_max_tokens: int = 1000
+    llm_max_tokens: int = 8192
 
     # ─── Database ─────────────────────────────────
-    database_url: str = "sqlite:///./data/naijareview.db"
+    database_url: str = "postgresql://postgres:PASSWORD@HOST.railway.app:5432/railway"
 
     # ─── Auth / JWT ───────────────────────────────
     jwt_secret_key: str = Field(..., description="Secret key for JWT signing")
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60 * 24  # 24 hours
 
-    # ─── ChromaDB ─────────────────────────────────
-    chroma_persist_dir: Path = Path("./data/chroma")
+    # ─── ChromaDB (Railway) ───────────────────────
+    chroma_host: str = "chromadb-production-9e98.up.railway.app"
+    chroma_port: int = 443
+    chroma_ssl: bool = True
+    chroma_auth_token: str = Field("", description="ChromaDB auth token for Railway")
     chroma_collection_prefix: str = "naijareview"
+    chroma_persist_dir: Path = Path("./data/chroma")  # fallback for local dev
+    chroma_mode: Literal["railway", "local"] = "railway"
 
     # ─── FAISS ────────────────────────────────────
-    faiss_index_path: Path = Path("./data/processed/faiss_index")
-    embedding_model: str = "BAAI/bge-m3"
+    faiss_index_path: Path = Path("./data/processed/faiss_index_bge_opt")
+    embedding_model: str = "BAAI/bge-base-en-v1.5"
+    item_display_metadata_path: Path = Path("./data/processed/item_display_metadata.json")
 
     # ─── Redis (Fingerprint Cache) ────────────────
     redis_url: str = "redis://localhost:6379/0"
@@ -55,7 +61,7 @@ class Settings(BaseSettings):
 
     # ─── API Server ───────────────────────────────
     api_host: str = "0.0.0.0"
-    api_port: int = 8000
+    api_port: int = 9000
     api_debug: bool = True
     log_level: str = "DEBUG"
 

@@ -7,6 +7,6 @@
 // demoMode: false → always hit the real API (fail loudly)
 
 window.__NAIVIEW_CONFIG__ = {
-  apiBaseUrl: "http://localhost:8000",
+  apiBaseUrl: "http://localhost:9000",
   demoMode: true,
 };

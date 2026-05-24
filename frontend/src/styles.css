@@ -61,6 +61,39 @@
   --bg: #0D0E0C;
 }
 
+/* Light theme */
+[data-theme="light"] {
+  --bg: #F2F2F5;
+  --bg-elev: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface-2: #EBEBEF;
+  --border: #DDDDE3;
+  --border-strong: #C8C8D0;
+  --fg: #18181C;
+  --fg-dim: #44444C;
+  --fg-mute: #888892;
+  --fg-faint: #BBBBCC;
+  --shadow-soft: 0 1px 0 rgba(255,255,255,0.9) inset, 0 8px 24px rgba(0,0,0,0.06);
+}
+
+[data-theme="light"] body {
+  background:
+    radial-gradient(ellipse 1400px 700px at 15% -5%, rgba(0,212,170,0.035), transparent 65%),
+    radial-gradient(ellipse 900px 600px at 88% 8%, rgba(139,126,200,0.03), transparent 60%),
+    var(--bg);
+}
+
+[data-theme="light"] body::before {
+  background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.055) 1px, transparent 0);
+  opacity: 0.7;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track { background: #E8E8EC; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--border-strong); border-color: #E8E8EC; }
+
+/* Light + Naija Vibe */
+[data-theme="light"][data-vibe="on"] { --bg: #F2F2EE; }
+
 /* ============================================================
    Reset & Base
    ============================================================ */
@@ -304,6 +337,29 @@ a:hover { color: var(--fg); }
   letter-spacing: 0.14em;
   color: var(--fg-mute);
   margin-bottom: 8px;
+}
+
+/* ============================================================
+   Theme toggle button (light / dark)
+   ============================================================ */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg-mute);
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  border-color: var(--border-strong);
+  color: var(--fg);
+  background: var(--surface-2);
 }
 
 /* ============================================================

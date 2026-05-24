@@ -1,23 +1,39 @@
-# ──────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 # NaijaReview Intelligence — Docker Compose
-# ──────────────────────────────────────────────
-# Usage:
-#   docker compose up              → API + ChromaDB + Redis
-#   docker compose --profile eval up → Above + eval runner
-# ──────────────────────────────────────────────
+# DSN × BCT LLM Agent Challenge 3.0
+# ──────────────────────────────────────────────────────────────────────────────
+#
+# Quick start:
+#   cp .env.example .env          # fill in GEMINI_API_KEY + JWT_SECRET_KEY
+#   docker compose up             # API + ChromaDB + Redis
+#
+# Run evaluation:
+#   docker compose --profile eval up eval-runner
+#
+# Frontend dev server (separate — not containerised):
+#   cd frontend && python -m http.server 3000
+#
+# ──────────────────────────────────────────────────────────────────────────────
 
 services:
+
+  # ─── Main API ─────────────────────────────────────────────────────────────
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: naijareview-api:latest
+    container_name: naijareview-api
     ports:
-      - "8000:8000"
+      - "9000:9000"
     env_file: .env
     environment:
       - REDIS_URL=redis://redis:6379/0
       - CHROMA_PERSIST_DIR=/data/chroma
+      - CACHE_BACKEND=redis
     volumes:
       - chroma-data:/data/chroma
-      - ./data:/app/data
+      - ./data:/app/data:ro
       - ./results:/app/results
     depends_on:
       redis:
@@ -25,9 +41,20 @@ services:
       chromadb:
         condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:9000/healthz').raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s   # warmup (embedding + FAISS load) takes ~60s
+    labels:
+      com.naijareview.role: "api"
+      com.naijareview.version: "0.1.0"
 
+  # ─── ChromaDB (local fallback — prod uses Railway) ────────────────────────
   chromadb:
     image: chromadb/chroma:latest
+    container_name: naijareview-chromadb
     ports:
       - "8100:8000"
     volumes:
@@ -35,27 +62,42 @@ services:
     environment:
       - IS_PERSISTENT=TRUE
       - ANONYMIZED_TELEMETRY=FALSE
+      - CHROMA_SERVER_AUTHN_CREDENTIALS=${CHROMA_AUTH_TOKEN:-naijareview-local}
+      - CHROMA_SERVER_AUTHN_PROVIDER=chromadb.auth.token_authn.TokenAuthenticationServerProvider
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    labels:
+      com.naijareview.role: "vectordb"
 
+  # ─── Redis (fingerprint cache) ────────────────────────────────────────────
   redis:
     image: redis:7-alpine
+    container_name: naijareview-redis
     ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    labels:
+      com.naijareview.role: "cache"
 
-  # ─── Eval profile (optional) ────────────────
+  # ─── Evaluation runner (--profile eval) ───────────────────────────────────
   eval-runner:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: naijareview-api:latest
+    container_name: naijareview-eval
     profiles: ["eval"]
     env_file: .env
     environment:
@@ -63,12 +105,31 @@ services:
       - CHROMA_PERSIST_DIR=/data/chroma
     volumes:
       - chroma-data:/data/chroma
-      - ./data:/app/data
+      - ./data:/app/data:ro
       - ./results:/app/results
+      - ./tests:/app/tests:ro
     depends_on:
-      - api
-    command: ["python", "-m", "naijareview.eval.harness"]
+      api:
+        condition: service_healthy
+    # Override with: docker compose --profile eval run eval-runner --ablation --sample 100
+    command:
+      - "python"
+      - "tests/eval/harness.py"
+      - "--variant"
+      - "full"
+      - "--sample"
+      - "100"
+      - "--seed"
+      - "42"
+      - "--task"
+      - "both"
+      - "--output"
+      - "results/eval/"
+    labels:
+      com.naijareview.role: "eval"
 
 volumes:
   chroma-data:
+    driver: local
   redis-data:
+    driver: local

@@ -24,20 +24,25 @@ async def healthz() -> dict:
 
 @router.get("/readyz")
 async def readyz() -> dict:
-    """Readiness probe — checks that critical dependencies are reachable.
+    """Readiness probe — reflects actual warmup state of all components.
 
-    Returns 200 when the API and its backing services (DB, Chroma, etc.)
-    are ready to accept traffic. Degraded components are reported but
-    don't fail the probe (graceful degradation).
+    Returns 200 regardless of component status (graceful degradation).
+    Callers can inspect ``checks.ready`` to determine full readiness.
     """
-    # TODO: ping ChromaDB, FAISS, Redis when wired
+    from naijareview.api.startup import get_status
+    warmup = get_status()
     return {
-        "status": "ok",
+        "status": "ready" if warmup["ready"] else "degraded",
         "service": "naijareview",
         "checks": {
             "database": "sqlite" if "sqlite" in settings.database_url else "postgres",
-            "chromadb": "not_wired",
-            "faiss": "not_wired",
+            "embedding_model": warmup["embedding"],
+            "faiss_index": warmup["faiss"],
+            "bm25_index": warmup["bm25"],
+            "chromadb": warmup["chroma"],
+            "task_a_graph": warmup["task_a_graph"],
+            "task_b_graph": warmup["task_b_graph"],
             "fingerprint_cache": settings.cache_backend,
+            "warmup_errors": warmup["errors"],
         },
     }

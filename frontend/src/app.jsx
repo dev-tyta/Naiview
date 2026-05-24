@@ -3,11 +3,11 @@
 const { useState, useEffect } = React;
 
 // ------------------------------------------------------------------
-// API helper — reads base URL from env.js (window.__NAIVIEW_CONFIG__)
+// API helpers — reads base URL from env.js (window.__NAIVIEW_CONFIG__)
 // ------------------------------------------------------------------
 async function apiPost(path, body) {
   const cfg = window.__NAIVIEW_CONFIG__ || {};
-  const base = cfg.apiBaseUrl || "http://localhost:8000";
+  const base = cfg.apiBaseUrl || "http://localhost:9000";
   const res = await fetch(`${base}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -20,12 +20,23 @@ async function apiPost(path, body) {
   return res.json();
 }
 
+async function apiGet(path) {
+  const cfg = window.__NAIVIEW_CONFIG__ || {};
+  const base = cfg.apiBaseUrl || "http://localhost:9000";
+  const res = await fetch(`${base}${path}`);
+  if (!res.ok) {
+    const text = await res.text().catch(() => `HTTP ${res.status}`);
+    throw new Error(text || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
 function isDemoMode() {
   return (window.__NAIVIEW_CONFIG__ || {}).demoMode !== false;
 }
 
-// Expose globally so pages can import without React context plumbing
-Object.assign(window, { apiPost, isDemoMode });
+// Expose globally so pages can use without React context plumbing
+Object.assign(window, { apiPost, apiGet, isDemoMode });
 
 // ------------------------------------------------------------------
 // Hash router
@@ -50,13 +61,19 @@ function useHashRoute() {
 function App() {
   const [route, navigate] = useHashRoute();
   const [vibe, setVibe] = useState(() => localStorage.getItem("naija-vibe") === "true");
+  const [theme, setTheme] = useState(() => localStorage.getItem("naiview-theme") || "dark");
 
   useEffect(() => {
     document.documentElement.setAttribute("data-vibe", vibe ? "on" : "off");
     localStorage.setItem("naija-vibe", vibe);
   }, [vibe]);
 
-  const pageProps = { vibe, setVibe, navigate };
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("naiview-theme", theme);
+  }, [theme]);
+
+  const pageProps = { vibe, setVibe, navigate, theme, setTheme };
 
   let page;
   switch (route) {
@@ -71,7 +88,7 @@ function App() {
 
   return (
     <>
-      <Nav route={route} navigate={navigate} vibe={vibe} setVibe={setVibe} />
+      <Nav route={route} navigate={navigate} vibe={vibe} setVibe={setVibe} theme={theme} setTheme={setTheme} />
       <main key={route} className="page-enter" data-screen-label={route === "/" ? "Landing" : route.slice(1)}>
         {page}
       </main>

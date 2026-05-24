@@ -63,7 +63,7 @@ poetry run pre-commit install
 poetry run pytest
 
 # Start the API server (dev)
-poetry run uvicorn naijareview.api.main:app --reload --port 8000
+poetry run uvicorn naijareview.api.main:app --reload --port 9000
 ```
 
 ### Docker (full stack)
@@ -72,7 +72,7 @@ poetry run uvicorn naijareview.api.main:app --reload --port 8000
 docker compose up
 ```
 
-This starts the API, ChromaDB, and Redis. Access the API at `http://localhost:8000`.
+This starts the API, ChromaDB, and Redis. Access the API at `http://localhost:9000`.
 
 ### Eval harness
 

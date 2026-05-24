@@ -418,7 +418,7 @@ poetry install --with ml,eval
 pip install -r requirements.txt
 
 # API server
-poetry run uvicorn naijareview.api.main:app --reload --port 8000
+poetry run uvicorn naijareview.api.main:app --reload --port 9000
 
 # Tests
 poetry run pytest tests/unit/ -v                          # fast, no services

@@ -1,0 +1,6 @@
+variant,task_a_n,rouge_l,bertscore_f1,rating_mae,abeg_score,abeg_vibe_on,abeg_vibe_off,word_count,task_a_fail,task_b_n,ndcg_at_10,hit_at_10,diversity,confidence,task_b_fail
+full,30,0.1122 ±0.0090,0.8144 ±0.0058,1.6333 ±0.2667,0.4238 ±0.0533,0.9250,0.3880,91.6,0.000,30,0.0000 ±0.0000,0.0000 ±0.0000,0.0000 ±0.0000,0.0000,0.000
+vibe_off,,,,,,,,,,,,,,,
+no_fingerprint,,,,,,,,,,,,,,,
+no_persona,,,,,,,,,,,,,,,
+no_synthetic,,,,,,,,,,,,,,,

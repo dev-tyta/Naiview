@@ -155,7 +155,7 @@ def rerank_candidates(
             f"\"alignment_score\": 0.92, \"reasoning_snippet\": \"Best match.\"}}]}}"
         )
 
-        raw = _router.call_with_retry("generation", prompt, max_tokens=600)
+        raw = _router.call_with_retry("utility", prompt)
         data = _parse_json_from_response(raw)
 
         if not isinstance(data, dict) or "rankings" not in data:

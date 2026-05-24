@@ -61,7 +61,7 @@ Specifically address the weakest dimension in this rewrite.
 {% endif %}
 
 CONSTRAINTS:
-- Word count MUST fall within {{ verbosity_word_range[0] }}–{{ verbosity_word_range[1] }} words.
+- Word count MUST be at least {{ [verbosity_word_range[0], 50] | max }} words. Target {{ verbosity_word_range[0] }}–{{ verbosity_word_range[1] }} words. SHORT reviews are REJECTED.
 - Rating MUST reflect the sentiment of the review text — do not contradict.
 - Do not mention the user's name or that this is AI-generated.
 - Return ONLY valid JSON. No markdown, no explanation outside the JSON.

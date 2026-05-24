@@ -16,7 +16,6 @@ Write patterns:
 
 from __future__ import annotations
 
-import json
 import logging
 from datetime import datetime
 from typing import Any
@@ -25,8 +24,6 @@ from naijareview.memory.embedding import EmbeddingProvider
 from naijareview.schemas.user import Review, UserHistory
 
 logger = logging.getLogger(__name__)
-
-_COLLECTION_NAME = "naijareview_reviews"
 
 
 class EpisodicMemory:
@@ -39,11 +36,11 @@ class EpisodicMemory:
     def __init__(
         self,
         persist_dir: str,
-        collection_prefix: str = "naijareview",
         embed_provider: EmbeddingProvider | None = None,
+        **_kwargs: Any,
     ) -> None:
         self.persist_dir = persist_dir
-        self.collection_name = f"{collection_prefix}_reviews"
+        self.collection_name = "user_personas"
         self._embed_provider = embed_provider or EmbeddingProvider()
         self._collection: Any = None  # lazily initialised
 
@@ -131,14 +128,22 @@ class EpisodicMemory:
             return self._collection
 
         import chromadb
+        from naijareview.config import settings
 
-        client = chromadb.PersistentClient(path=self.persist_dir)
+        if settings.chroma_mode == "railway":
+            client = chromadb.HttpClient(
+                host=settings.chroma_host,
+                port=settings.chroma_port,
+                ssl=settings.chroma_ssl,
+                headers={"Authorization": f"Bearer {settings.chroma_auth_token}"},
+            )
+        else:
+            client = chromadb.PersistentClient(path=self.persist_dir)
 
         try:
             self._collection = client.get_collection(self.collection_name)
-        except ValueError:
-            # Collection doesn't exist yet — create it
-            self._collection = client.create_collection(
+        except (ValueError, Exception):
+            self._collection = client.get_or_create_collection(
                 name=self.collection_name,
                 metadata={"hnsw:space": "cosine"},
             )

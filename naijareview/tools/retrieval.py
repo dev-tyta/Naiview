@@ -76,8 +76,25 @@ class BM25Index:
 
     def _load(self) -> None:
         from rank_bm25 import BM25Okapi
+        from naijareview.config import settings
 
-        self._metadata = json.loads(self.metadata_path.read_text())
+        raw = json.loads(self.metadata_path.read_text())
+        if isinstance(raw, dict) and "metadata" in raw:
+            self._metadata = list(raw["metadata"].values())
+        elif isinstance(raw, list):
+            self._metadata = raw
+        else:
+            self._metadata = []
+
+        # Enrich with display metadata (names, summaries)
+        display_path = settings.item_display_metadata_path
+        if display_path.exists():
+            display = json.loads(display_path.read_text())
+            for entry in self._metadata:
+                iid = entry.get("item_id", "")
+                if iid in display:
+                    entry.update({k: v for k, v in display[iid].items() if k not in entry or not entry[k]})
+
         corpus = []
         self._item_ids = []
 
@@ -107,6 +124,13 @@ class BM25Index:
 
 def _get_item_index() -> ItemIndex:
     global _item_index
+    try:
+        from naijareview.api.startup import get_item_index as _startup_idx
+        warmed = _startup_idx()
+        if warmed is not None:
+            return warmed
+    except ImportError:
+        pass
     if _item_index is None:
         _item_index = ItemIndex(
             index_path=settings.faiss_index_path,
@@ -257,10 +281,25 @@ def retrieve_candidates_hybrid(
     # Load metadata once to build item lookup
     meta_path = _get_metadata_path()
     if meta_path.exists():
-        all_metadata = json.loads(meta_path.read_text())
-        meta_by_id: dict[str, dict[str, Any]] = {m.get("item_id", ""): m for m in all_metadata}
+        _raw = json.loads(meta_path.read_text())
+        if isinstance(_raw, dict) and "metadata" in _raw:
+            meta_by_id: dict[str, dict[str, Any]] = _raw["metadata"]
+        elif isinstance(_raw, list):
+            meta_by_id = {m.get("item_id", ""): m for m in _raw}
+        else:
+            meta_by_id = {}
     else:
         meta_by_id = {}
+
+    # Enrich with display metadata (names, summaries)
+    display_path = settings.item_display_metadata_path
+    if display_path.exists():
+        _display = json.loads(display_path.read_text())
+        for iid, dmeta in _display.items():
+            if iid in meta_by_id:
+                meta_by_id[iid].update({k: v for k, v in dmeta.items() if k not in meta_by_id[iid] or not meta_by_id[iid][k]})
+            else:
+                meta_by_id[iid] = dmeta
 
     results: list[Item] = []
     seen: set[str] = set()

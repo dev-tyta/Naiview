@@ -19,6 +19,7 @@ python-jose = {extras = ["cryptography"], version = ">=3.3.0"}
 
 # ─── Database ─────────────────────────────────
 sqlmodel = ">=0.0.21"
+psycopg2-binary = ">=2.9.0"
 
 # ─── API Layer ───────────────────────────────
 fastapi = ">=0.115.0"

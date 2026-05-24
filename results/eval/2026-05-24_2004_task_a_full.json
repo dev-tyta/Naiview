@@ -1,0 +1,121 @@
+{
+  "variant": "full",
+  "n": 5,
+  "metrics": {
+    "rouge_l": {
+      "mean": 1.0,
+      "ci_95": [
+        1.0,
+        1.0
+      ]
+    },
+    "bertscore_f1": {
+      "mean": 0.0,
+      "ci_95": [
+        0.0,
+        0.0
+      ]
+    },
+    "rating_mae": {
+      "mean": 0.0,
+      "ci_95": [
+        0.0,
+        0.0
+      ]
+    },
+    "abeg_score": {
+      "mean": 0.163,
+      "ci_95": [
+        0.1,
+        0.253
+      ],
+      "vibe_on": 0.0,
+      "vibe_off": 0.163
+    },
+    "word_count_mean": 254.2,
+    "failure_rate": 0.0
+  },
+  "meta": {
+    "timestamp": "2026-05-24T20:02:18.586789",
+    "git_sha": "61e9f4b",
+    "seed": 42,
+    "dataset": "integrated_final_dataset_50k_v2.jsonl"
+  },
+  "samples": [
+    {
+      "user_id": "ivW0Vad81qJ8SIgqJ8p1Mw",
+      "item_id": "Js4PaZUhl-BpKtwqkEE14w",
+      "category": "Entertainment / Nightlife",
+      "actual_stars": 1.0,
+      "predicted_stars": 1.0,
+      "rouge_l": 1.0,
+      "bertscore_f1": 0.0,
+      "rating_mae": 0.0,
+      "abeg_score": 0.1,
+      "word_count": 380,
+      "naija_mode": false,
+      "duration_ms": 0.0022140000055514975,
+      "error": ""
+    },
+    {
+      "user_id": "pE4rk3ia1xAElYILJ05GNQ",
+      "item_id": "QntMBAbda0EOH6i5uJXwRQ",
+      "category": "School / Training",
+      "actual_stars": 5.0,
+      "predicted_stars": 5.0,
+      "rouge_l": 1.0,
+      "bertscore_f1": 0.0,
+      "rating_mae": 0.0,
+      "abeg_score": 0.1,
+      "word_count": 298,
+      "naija_mode": false,
+      "duration_ms": 0.008809000007659051,
+      "error": ""
+    },
+    {
+      "user_id": "ztVQFPr9khc_TjsBny-3rA",
+      "item_id": "23CdR-3bZ8J19LFhJWGqMg",
+      "category": "School / Training",
+      "actual_stars": 5.0,
+      "predicted_stars": 5.0,
+      "rouge_l": 1.0,
+      "bertscore_f1": 0.0,
+      "rating_mae": 0.0,
+      "abeg_score": 0.325,
+      "word_count": 109,
+      "naija_mode": false,
+      "duration_ms": 0.007314000015412603,
+      "error": ""
+    },
+    {
+      "user_id": "A1nIXS5XEWeZ2EUUcOsurA",
+      "item_id": "U8RlBEjD4Tm2EjdPZdJz8g",
+      "category": "Entertainment / Nightlife",
+      "actual_stars": 5.0,
+      "predicted_stars": 5.0,
+      "rouge_l": 1.0,
+      "bertscore_f1": 0.0,
+      "rating_mae": 0.0,
+      "abeg_score": 0.19,
+      "word_count": 192,
+      "naija_mode": false,
+      "duration_ms": 0.0019170000200574577,
+      "error": ""
+    },
+    {
+      "user_id": "I2XpWCHAom1JRyHXZQrnfg",
+      "item_id": "nWGTySMArl9vXv4tg11J3w",
+      "category": "General",
+      "actual_stars": 3.0,
+      "predicted_stars": 3.0,
+      "rouge_l": 1.0,
+      "bertscore_f1": 0.0,
+      "rating_mae": 0.0,
+      "abeg_score": 0.1,
+      "word_count": 292,
+      "naija_mode": false,
+      "duration_ms": 0.0031480000188821577,
+      "error": ""
+    }
+  ]
+}

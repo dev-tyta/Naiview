@@ -25,11 +25,24 @@ _INTENSIFIERS = {
     "excellent", "awful", "wonderful", "love", "hate",
 }
 
-_PIDGIN_SET = {
-    "dey", "na", "dem", "abeg", "oga", "wahala", "sha", "sef", "nna",
-    "wey", "chop", "belle", "abi", "shey", "wetin", "oya", "naija",
-    "ehen", "ehn", "mumu",
-}
+def _load_pidgin_set() -> set[str]:
+    """Load the full 847-token Nigerian slang corpus from phrase_library."""
+    from pathlib import Path
+    corpus_path = Path("data/phrase_library/token_corpus.txt")
+    if corpus_path.exists():
+        return {
+            line.split("\t")[0].strip().lower()
+            for line in corpus_path.read_text().splitlines()
+            if line.strip()
+        }
+    # Fallback hardcoded set if file missing
+    return {
+        "dey", "na", "dem", "abeg", "oga", "wahala", "sha", "sef", "nna",
+        "wey", "chop", "belle", "abi", "shey", "wetin", "oya", "naija",
+        "ehen", "ehn", "mumu",
+    }
+
+_PIDGIN_SET = _load_pidgin_set()
 
 _POSITIVE_WORDS = {"good", "great", "love", "amazing", "excellent"}
 _NEGATIVE_WORDS = {"bad", "terrible", "awful", "horrible", "hate"}
@@ -133,8 +146,8 @@ def build_behavioural_fingerprint(user_history: UserHistory) -> Fingerprint:
         sum(1 for wc in word_counts if wc <= mean_wc) / len(word_counts)
     )
 
-    p20 = int(_percentile(word_counts, 20))
-    p80 = int(_percentile(word_counts, 80))
+    p20 = max(40, int(_percentile(word_counts, 20)))
+    p80 = max(120, int(_percentile(word_counts, 80)))
     verbosity_word_range: tuple[int, int] = (p20, p80)
 
     # ── Emotional intensity ───────────────────────────────────────────────

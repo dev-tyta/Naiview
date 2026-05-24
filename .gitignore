@@ -49,13 +49,19 @@ coverage.xml
 # ─── Data (raw + processed are NOT committed) ─
 data/raw/*
 !data/raw/.gitkeep
-data/processed/*
+data/processed/eval/*
 !data/processed/.gitkeep
 data/chroma/
 
-# ─── Results (generated at eval time) ────────
+# ─── Results (eval outputs committed for paper/submission) ───────────────────
 results/*
 !results/.gitkeep
+!results/eval/
+results/eval/*
+!results/eval/.gitkeep
+!results/eval/*.json
+!results/eval/*.csv
+!results/eval/*.md
 
 # ─── Docker ──────────────────────────────────
 docker-compose.override.yml

@@ -10,14 +10,12 @@ import json
 import logging
 import re
 import time
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 from naijareview.agents.nodes.shared import append_error
 from naijareview.llm.router import LLMRouter
 from naijareview.skills.memory_bootstrap import ColdStartBootstrapper
-
-if TYPE_CHECKING:
-    from naijareview.agents.task_b import TaskBState
+from naijareview.agents.task_b import TaskBState
 
 logger = logging.getLogger(__name__)
 _router = LLMRouter()
@@ -114,10 +112,15 @@ def build_fingerprint(state: "TaskBState") -> "TaskBState":
     t0 = _ts()
     try:
         from naijareview.tools.fingerprint import build_behavioural_fingerprint
+        from naijareview.memory.semantic import FingerprintCache
         history = state.get("user_history")
         if history is None:
             raise ValueError("no user_history")
-        fp = build_behavioural_fingerprint.invoke({"user_history": history})
+        cache = FingerprintCache()
+        fp = cache.get(state["user_id"])
+        if fp is None:
+            fp = build_behavioural_fingerprint.invoke({"user_history": history})
+            cache.set(state["user_id"], fp)
         state = {**state, "fingerprint": fp}
         return _trace(state, "build_fingerprint", t0, f"style={fp.emotional_style}")
     except Exception as exc:
@@ -300,7 +303,7 @@ def generate_explanations(state: "TaskBState") -> "TaskBState":
             f'{{\"explanations\": [{{"rank": 1, "explanation": "..."}}]}}'
         )
 
-        raw = _router.call_with_retry("generation", prompt, max_tokens=600)
+        raw = _router.call_with_retry("generation", prompt)
         cleaned = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
         match = re.search(r"\{.*\}", cleaned, re.DOTALL)
         data = json.loads(match.group()) if match else json.loads(cleaned)
@@ -340,10 +343,6 @@ def generate_explanations(state: "TaskBState") -> "TaskBState":
 def compute_confidence(state: "TaskBState") -> "TaskBState":
     t0 = _ts()
     try:
-        history = state.get("user_history")
-        review_count = history.review_count if history else 0
-        history_factor = min(1.0, review_count / 10.0)
-
         recs = state.get("recommendations", [])
         n = len(recs)
         alignment_factor = (
@@ -351,16 +350,26 @@ def compute_confidence(state: "TaskBState") -> "TaskBState":
             if state.get("reranked_candidates") else 0.5
         )
 
+        persona = state.get("cold_start_persona")
+        if persona:
+            filled = sum(1 for f in [
+                persona.food_preference, persona.value_orientation,
+                persona.atmosphere_preference, persona.budget_range,
+                persona.frequency_of_dining_out,
+            ] if f is not None)
+            cold_start_coverage = filled / 5.0
+        else:
+            cold_start_coverage = 0.0
+
         diversity = state.get("diversity_score", 0.5)
 
         query = state.get("context_query", "")
-        # Query specificity: longer + more specific = higher
         query_specificity = min(1.0, len(query.split()) / 10.0)
 
         confidence = (
-            0.35 * history_factor
-            + 0.35 * alignment_factor
-            + 0.15 * diversity
+            0.40 * alignment_factor
+            + 0.25 * cold_start_coverage
+            + 0.20 * diversity
             + 0.15 * query_specificity
         )
         confidence = round(max(0.0, min(1.0, confidence)), 4)

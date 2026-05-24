@@ -1,15 +1,58 @@
 /* EVALUATION — Metrics dashboard + Side-by-side comparison */
 
-const { useState } = React;
+const { useState, useEffect } = React;
 
-const METRICS = [
+// Baseline values are TF-IDF / simple collaborative filter (no cultural pipeline)
+const DEMO_METRICS = [
   { key: "rouge",  label: "ROUGE-L",         value: 0.42, baseline: 0.31, hint: "Lexical overlap with human reference reviews" },
   { key: "bert",   label: "BERTScore",        value: 0.78, baseline: 0.69, hint: "Semantic similarity to human-written output" },
-  { key: "rmse",   label: "Rating RMSE",      value: 0.61, baseline: 0.89, hint: "Star prediction error — lower is better", invert: true },
+  { key: "rmse",   label: "Rating MAE",       value: 0.61, baseline: 0.89, hint: "Star prediction error — lower is better", invert: true },
   { key: "ndcg",   label: "NDCG@10",          value: 0.74, baseline: 0.58, hint: "Ranking quality at top-10 recommendations" },
   { key: "vibe",   label: "Naija Vibe Score", value: 0.81, baseline: 0.32, hint: "Cultural authenticity — avg Abeg score across test set" },
   { key: "human",  label: "Human Eval",       value: 0.87, baseline: 0.71, hint: "Preference rate · pilot cohort · 12 native speakers" },
 ];
+
+// /admin/results returns task_a.<variant> = metrics dict from JSON file.
+// Metrics are nested: { rouge_l: { mean, ci_95 }, bertscore_f1: { mean, ci_95 }, ... }
+function _parseApiMetrics(data) {
+  const _m = (obj, key) => (obj[key] || {}).mean ?? null;
+
+  // Prefer full variant; fall back to first available
+  const taskA = data.task_a || {};
+  const taskB = data.task_b || {};
+  const a = taskA.full || Object.values(taskA)[0] || {};
+  const b = taskB.full || Object.values(taskB)[0] || {};
+
+  const baselineA = taskA.baseline || {};
+
+  const rougeVal   = _m(a, "rouge_l");
+  const bertVal    = _m(a, "bertscore_f1");
+  const maeVal     = _m(a, "rating_mae");
+  const vibeA      = _m(a, "abeg_score");
+  const vibeB      = _m(b, "abeg_score");
+  const vibeVal    = (vibeA != null && vibeB != null) ? (vibeA + vibeB) / 2 : (vibeA ?? vibeB);
+  // Task B: completion rate as proxy for NDCG (we dropped NDCG — use diversity instead)
+  const divVal     = _m(b, "diversity");
+
+  // Baseline values (for the progress bars)
+  const rougeBase  = _m(baselineA, "rouge_l")    ?? 0.31;
+  const bertBase   = _m(baselineA, "bertscore_f1") ?? 0.69;
+  const maeBase    = _m(baselineA, "rating_mae")  ?? 1.89;
+
+  if (rougeVal == null && bertVal == null) return null;
+
+  return DEMO_METRICS.map(m => {
+    switch (m.key) {
+      case "rouge": return { ...m, value: rougeVal ?? m.value, baseline: rougeBase };
+      case "bert":  return { ...m, value: bertVal  ?? m.value, baseline: bertBase  };
+      case "rmse":  return { ...m, value: maeVal   ?? m.value, baseline: maeBase   };
+      case "ndcg":  return divVal  != null ? { ...m, value: divVal  } : m;
+      case "vibe":  return vibeVal != null ? { ...m, value: vibeVal } : m;
+      default: return m;
+    }
+  });
+}
+
 
 const COMPARISONS = [
   {
@@ -92,7 +135,20 @@ function EvaluationPage({ vibe }) {
   const t = ((window.TRANSLATIONS || {})[vibe ? 'pidgin' : 'en'] || {}).eval || {};
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [metrics, setMetrics] = useState(DEMO_METRICS);
+  const [metricsLive, setMetricsLive] = useState(false);
   const c = COMPARISONS[idx];
+
+  // Fetch live eval results when API is available
+  useEffect(() => {
+    if (window.isDemoMode && window.isDemoMode()) return;
+    window.apiGet("/admin/results")
+      .then(data => {
+        const parsed = _parseApiMetrics(data);
+        if (parsed) { setMetrics(parsed); setMetricsLive(true); }
+      })
+      .catch(() => {}); // silently fall back to demo values
+  }, []);
 
   // Auto-cycle every 7s, pause on manual selection
   useEffect(() => {
@@ -113,9 +169,16 @@ function EvaluationPage({ vibe }) {
 
       {/* METRIC BARS — 2-col grid, cleaner than rings */}
       <Reveal>
-        <div className="eyebrow" style={{ marginBottom: 16 }}>{t.quantLabel || 'Quantitative Results'}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+          <div className="eyebrow">{t.quantLabel || 'Quantitative Results'}</div>
+          {metricsLive && (
+            <span className="chip high" style={{ fontSize: 10, padding: '2px 8px' }}>
+              <span className="chip-dot"></span>LIVE
+            </span>
+          )}
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
-          {METRICS.map(m => (
+          {metrics.map(m => (
             <MetricBar key={m.key} value={m.value} baseline={m.baseline} label={m.label} hint={m.hint} invert={m.invert} />
           ))}
         </div>

@@ -1,0 +1,397 @@
+{
+  "variant": "full",
+  "n": 30,
+  "metrics": {
+    "ndcg_at_10": {
+      "mean": 0.0,
+      "ci_95": [
+        0.0,
+        0.0
+      ]
+    },
+    "hit_at_10": {
+      "mean": 0.0,
+      "ci_95": [
+        0.0,
+        0.0
+      ]
+    },
+    "diversity": {
+      "mean": 0.0,
+      "ci_95": [
+        0.0,
+        0.0
+      ]
+    },
+    "confidence_mean": 0.0,
+    "failure_rate": 0.0
+  },
+  "meta": {
+    "timestamp": "2026-05-24T20:07:40.708920",
+    "git_sha": "61e9f4b",
+    "seed": 42,
+    "dataset": "integrated_final_dataset_50k_v2.jsonl"
+  },
+  "samples": [
+    {
+      "user_id": "ivW0Vad81qJ8SIgqJ8p1Mw",
+      "context_query": "Looking for Entertainment / Nightlife recommendations",
+      "target_item_id": "Js4PaZUhl-BpKtwqkEE14w",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 2303.990643999896,
+      "error": ""
+    },
+    {
+      "user_id": "pE4rk3ia1xAElYILJ05GNQ",
+      "context_query": "Looking for School / Training recommendations",
+      "target_item_id": "QntMBAbda0EOH6i5uJXwRQ",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1636.1537600000702,
+      "error": ""
+    },
+    {
+      "user_id": "ztVQFPr9khc_TjsBny-3rA",
+      "context_query": "Looking for School / Training recommendations",
+      "target_item_id": "23CdR-3bZ8J19LFhJWGqMg",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1526.1344749999353,
+      "error": ""
+    },
+    {
+      "user_id": "A1nIXS5XEWeZ2EUUcOsurA",
+      "context_query": "Looking for Entertainment / Nightlife recommendations",
+      "target_item_id": "U8RlBEjD4Tm2EjdPZdJz8g",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1430.2513099999032,
+      "error": ""
+    },
+    {
+      "user_id": "I2XpWCHAom1JRyHXZQrnfg",
+      "context_query": "Looking for General recommendations",
+      "target_item_id": "nWGTySMArl9vXv4tg11J3w",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1549.1703019999932,
+      "error": ""
+    },
+    {
+      "user_id": "PlkcpVx74F5bcjTznVoTEg",
+      "context_query": "Looking for General recommendations",
+      "target_item_id": "ZF0tt7hn6WK3-aNWgtLcFA",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1688.6788669999078,
+      "error": ""
+    },
+    {
+      "user_id": "f9lq4KAus-xCsmJmjXeKVw",
+      "context_query": "Looking for Shopping / Market recommendations",
+      "target_item_id": "7vEt6mRC_j6HMo-nRxK9wA",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1579.0881689999878,
+      "error": ""
+    },
+    {
+      "user_id": "UlWDGR0QrBbdFsVY6ugocw",
+      "context_query": "Looking for Shopping / Market recommendations",
+      "target_item_id": "cKexlyJCUdZ_aKhptHZnTQ",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1742.714580999973,
+      "error": ""
+    },
+    {
+      "user_id": "TFwdSSKw3vWJgj0lqqd-iw",
+      "context_query": "Looking for Mechanic / Auto recommendations",
+      "target_item_id": "DHVwSH_tR0kPWcAMKH48uA",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1625.7204730000012,
+      "error": ""
+    },
+    {
+      "user_id": "WDX_KkxwI8VYOF3RHpNLpA",
+      "context_query": "Looking for Local Services recommendations",
+      "target_item_id": "S3r6DF5zQ3i9CjihVEaSHw",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 3090.1534300001003,
+      "error": ""
+    },
+    {
+      "user_id": "dvu83QWKsnnbGvNVQ3mv7A",
+      "context_query": "Looking for Hotels & Travel recommendations",
+      "target_item_id": "OZT2_Mwn31f_8yaPfU-vAg",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 37975.20810099991,
+      "error": ""
+    },
+    {
+      "user_id": "zxNtaKTMzZzum8ek2v4UXg",
+      "context_query": "Looking for General recommendations",
+      "target_item_id": "Qi9b7HT269_U1aKxKlmKew",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1553.1651070000407,
+      "error": ""
+    },
+    {
+      "user_id": "EbzIOck2feoZrGxRjyPDyw",
+      "context_query": "Looking for Entertainment / Nightlife recommendations",
+      "target_item_id": "hdGSVYYrLFS4iNufBX3q6A",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1819.5214190000115,
+      "error": ""
+    },
+    {
+      "user_id": "2T8ZGt1RsCrcJEZcRfsylg",
+      "context_query": "Looking for General recommendations",
+      "target_item_id": "6T0RPFP06soNWqRmRcBC3w",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1541.5657560001819,
+      "error": ""
+    },
+    {
+      "user_id": "iNWfLMXuXG19fpLzTMylkQ",
+      "context_query": "Looking for General recommendations",
+      "target_item_id": "aCa9L-NipZIZlo6wIwlkzw",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1724.7512940000433,
+      "error": ""
+    },
+    {
+      "user_id": "mJy-5ShuwwYRayxRtl6xxA",
+      "context_query": "Looking for Local Services recommendations",
+      "target_item_id": "tSqYIivAp4sxtOrGqOaLfA",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1843.3116790001804,
+      "error": ""
+    },
+    {
+      "user_id": "j14WgRoU_-2ZE1aw1dXrJg",
+      "context_query": "Looking for Entertainment / Nightlife recommendations",
+      "target_item_id": "Jio1vxVDY7qzNR5tVQj2lQ",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1442.271638999955,
+      "error": ""
+    },
+    {
+      "user_id": "DwaaafwryFbW7C4E1gU1AA",
+      "context_query": "Looking for Entertainment / Nightlife recommendations",
+      "target_item_id": "Ut4tiRgbuL5sOa3hZemWGQ",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1539.2776829999093,
+      "error": ""
+    },
+    {
+      "user_id": "5Y5KbsI5buMcNh2hTFaRpA",
+      "context_query": "Looking for Shopping / Market recommendations",
+      "target_item_id": "J3KU2B0A-_kKM2vlQGCuHA",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1830.8676859999196,
+      "error": ""
+    },
+    {
+      "user_id": "Kgb1KdaTrRnGqQ4misL12w",
+      "context_query": "Looking for Entertainment / Nightlife recommendations",
+      "target_item_id": "7fvmit2SoSD6HU8cvEY_ww",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1642.6010939999287,
+      "error": ""
+    },
+    {
+      "user_id": "NNyr4wknApjc5nF9QOO2Mg",
+      "context_query": "Looking for General recommendations",
+      "target_item_id": "ZKpE-gz2tWrP_Z5w1fcEwQ",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1445.3544829998464,
+      "error": ""
+    },
+    {
+      "user_id": "JSzIwMqdSI74_ztnbWzsEA",
+      "context_query": "Looking for Shopping / Market recommendations",
+      "target_item_id": "OXCeHwlSOHD1u2oVQ5dsdg",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 3477.9350170001635,
+      "error": ""
+    },
+    {
+      "user_id": "jRvHWGn-f3dHRUeiFfIytA",
+      "context_query": "Looking for Shopping / Market recommendations",
+      "target_item_id": "xYUmU8dN9KRw45X1oIEMyg",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 6437.397301000146,
+      "error": ""
+    },
+    {
+      "user_id": "BmCI9_Oxg7018TOxvnUPEg",
+      "context_query": "Looking for School / Training recommendations",
+      "target_item_id": "HLpuAT5-2mVeWKigV9bHZg",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 3892.334061000156,
+      "error": ""
+    },
+    {
+      "user_id": "bpgKKIpdAmtqdzJT5X3xRw",
+      "context_query": "Looking for School / Training recommendations",
+      "target_item_id": "Qm8BdFNw9MxUnd1mlrslBA",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 3890.132562999952,
+      "error": ""
+    },
+    {
+      "user_id": "VYmKcAhDXH-YZTS0R9ypVQ",
+      "context_query": "Looking for School / Training recommendations",
+      "target_item_id": "3ifYO8pCVYXJZV4yirRLLA",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 21211.01292100002,
+      "error": ""
+    },
+    {
+      "user_id": "47oIw-CN1guUKx2_vUdsgw",
+      "context_query": "Looking for School / Training recommendations",
+      "target_item_id": "UwiRjRCc1vCWjtZxuUlV-w",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1458.284120999906,
+      "error": ""
+    },
+    {
+      "user_id": "hLxIRMn_UtDGVG_8Z9qkEQ",
+      "context_query": "Looking for School / Training recommendations",
+      "target_item_id": "tf_RD35qXY86878vUY2qWQ",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1397.988320999957,
+      "error": ""
+    },
+    {
+      "user_id": "bNnBwW5kNO77KTgMeVhxKg",
+      "context_query": "Looking for Salon & Spa recommendations",
+      "target_item_id": "5J3yb5B0QleQHEksRB5hjw",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1341.4947090000169,
+      "error": ""
+    },
+    {
+      "user_id": "WPdkJN1FLiNDVDWRN5MLaw",
+      "context_query": "Looking for General recommendations",
+      "target_item_id": "6_F7TKg4qkp94eCSgBHL5A",
+      "ranked_item_ids": [],
+      "ndcg_at_10": 0.0,
+      "hit_at_10": 0.0,
+      "diversity_score": 0.0,
+      "confidence": 0.0,
+      "duration_ms": 1339.59819100005,
+      "error": ""
+    }
+  ]
+}

@@ -1,15 +1,17 @@
-"""Admin routes — development-only endpoints for debugging and introspection.
-
-13.3 of INTERNAL_ARCHITECTURE.md.
-"""
+"""Admin routes — debugging, introspection, and eval results."""
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+import json
+from pathlib import Path
+
+from fastapi import APIRouter, HTTPException
 
 from naijareview.config import settings
 
 router = APIRouter()
+
+_RESULTS_DIR = Path("results/eval")
 
 
 @router.get("/health")
@@ -51,6 +53,67 @@ async def rebuild_fingerprint(user_id: str) -> dict:
         "status": "not_implemented",
         "note": "Set GEMINI_API_KEY and wire ChromaDB to enable",
     }
+
+
+@router.get("/results")
+async def get_eval_results() -> dict:
+    """Return the most-recent eval results for every variant found in results/eval/.
+
+    Used by the website metrics dashboard and for paper cross-referencing.
+    Aggregates all JSON files in results/eval/ and returns the latest run
+    per (task, variant) combination.
+    """
+    if not _RESULTS_DIR.exists():
+        raise HTTPException(status_code=404, detail="No eval results found — run tests/eval/harness.py first")
+
+    # Collect all result JSON files
+    json_files = sorted(_RESULTS_DIR.glob("*.json"), reverse=True)  # newest first
+    if not json_files:
+        raise HTTPException(status_code=404, detail="No result files in results/eval/")
+
+    task_a: dict[str, dict] = {}
+    task_b: dict[str, dict] = {}
+
+    for jf in json_files:
+        name = jf.stem  # e.g. 2026-05-24_1915_task_a_full
+        try:
+            data = json.loads(jf.read_text())
+        except Exception:
+            continue
+        variant = data.get("variant", "unknown")
+        if "task_a" in name and variant not in task_a:
+            task_a[variant] = data.get("metrics", {})
+            task_a[variant]["meta"] = data.get("meta", {})
+            task_a[variant]["n"] = data.get("n", 0)
+        elif "task_b" in name and variant not in task_b:
+            task_b[variant] = data.get("metrics", {})
+            task_b[variant]["meta"] = data.get("meta", {})
+            task_b[variant]["n"] = data.get("n", 0)
+
+    # Latest ablation CSV as raw text (for paper tooling)
+    csv_files = sorted(_RESULTS_DIR.glob("*ablation_comparison.csv"), reverse=True)
+    ablation_csv = csv_files[0].read_text() if csv_files else None
+
+    # Latest markdown summary
+    md_files = sorted(_RESULTS_DIR.glob("*summary.md"), reverse=True)
+    summary_md = md_files[0].read_text() if md_files else None
+
+    return {
+        "task_a": task_a,
+        "task_b": task_b,
+        "ablation_csv": ablation_csv,
+        "summary_md": summary_md,
+        "result_files": [f.name for f in json_files],
+    }
+
+
+@router.get("/results/latest-summary")
+async def get_latest_summary() -> dict:
+    """Return only the latest markdown summary — lightweight endpoint for the website."""
+    md_files = sorted(_RESULTS_DIR.glob("*summary.md"), reverse=True) if _RESULTS_DIR.exists() else []
+    if not md_files:
+        raise HTTPException(status_code=404, detail="No summary found — run eval first")
+    return {"summary_md": md_files[0].read_text(), "file": md_files[0].name}
 
 
 @router.get("/config")

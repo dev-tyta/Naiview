@@ -6,6 +6,9 @@ See §13 of INTERNAL_ARCHITECTURE.md.
 
 from __future__ import annotations
 
+import asyncio
+from contextlib import asynccontextmanager
+
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,6 +24,26 @@ from naijareview.db.engine import create_db_and_tables
 logger = structlog.get_logger()
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Pre-warm all heavy singletons before accepting traffic."""
+    from naijareview.api.startup import warm_up
+
+    create_db_and_tables()
+    logger.info(
+        "NaijaReview API warming up",
+        port=settings.api_port,
+        debug=settings.api_debug,
+        cache_backend=settings.cache_backend,
+    )
+    # Run blocking warmup in thread pool to avoid blocking the event loop
+    loop = asyncio.get_event_loop()
+    await loop.run_in_executor(None, warm_up)
+
+    yield
+    # Teardown (if needed in future)
+
+
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
     app = FastAPI(
@@ -28,6 +51,7 @@ def create_app() -> FastAPI:
         description=("Review generation & recommendation API with optional Nigerian cultural mode"),
         version="0.1.0",
         debug=settings.api_debug,
+        lifespan=lifespan,
     )
 
     # ─── Middleware ────────────────────────────────
@@ -69,18 +93,6 @@ def create_app() -> FastAPI:
                 "detail": "Internal server error",
                 "type": type(exc).__name__,
             },
-        )
-
-    # ─── Startup event ────────────────────────────
-
-    @app.on_event("startup")
-    async def startup() -> None:
-        create_db_and_tables()
-        logger.info(
-            "NaijaReview API starting",
-            port=settings.api_port,
-            debug=settings.api_debug,
-            cache_backend=settings.cache_backend,
         )
 
     return app

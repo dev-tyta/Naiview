@@ -70,8 +70,8 @@ class LLMRouter:
         self,
         tier: Literal["generation", "utility"],
         prompt: str,
-        max_tokens: int = 1000,
-        temperature: float = 0.7,
+        max_tokens: int | None = None,
+        temperature: float | None = None,
     ) -> str:
         """Single LLM call → str.
 
@@ -81,14 +81,22 @@ class LLMRouter:
         """
         llm = self.get_llm(tier, temperature=temperature, max_tokens=max_tokens)
         response = llm.invoke([HumanMessage(content=prompt)])
-        return str(response.content)
+        content = response.content
+        # Gemini 2.5 Pro returns content as list of blocks when thinking is active
+        if isinstance(content, list):
+            content = "".join(
+                part.get("text", "") if isinstance(part, dict) else str(part)
+                for part in content
+                if not (isinstance(part, dict) and part.get("type") == "thinking")
+            )
+        return str(content)
 
     def call_with_retry(
         self,
         tier: Literal["generation", "utility"],
         prompt: str,
-        max_tokens: int = 1000,
-        temperature: float = 0.7,
+        max_tokens: int | None = None,
+        temperature: float | None = None,
         max_retries: int = 2,
     ) -> str:
         """call() with exponential backoff on rate-limit / server errors."""

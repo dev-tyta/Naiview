@@ -159,7 +159,29 @@ class ItemIndex:
         self._index = faiss.read_index(str(self.index_path))
 
         if self.metadata_path.exists():
-            self._metadata = json.loads(self.metadata_path.read_text())
+            raw = json.loads(self.metadata_path.read_text())
+            if isinstance(raw, list):
+                self._metadata = raw
+            elif isinstance(raw, dict) and "item_id_map" in raw:
+                item_id_map = raw["item_id_map"]
+                meta_dict = raw.get("metadata", {})
+                self._metadata = []
+                for idx in range(len(item_id_map)):
+                    iid = item_id_map.get(str(idx), "")
+                    self._metadata.append(meta_dict.get(iid, {"item_id": iid}))
+            else:
+                self._metadata = []
+
+            # Enrich with display metadata (names, summaries, yelp categories)
+            from naijareview.config import settings
+            display_path = settings.item_display_metadata_path
+            if display_path.exists():
+                display = json.loads(display_path.read_text())
+                for entry in self._metadata:
+                    iid = entry.get("item_id", "")
+                    if iid in display:
+                        entry.update({k: v for k, v in display[iid].items() if k not in entry or not entry[k]})
+
             logger.info("Loaded metadata for %d items", len(self._metadata))
         else:
             logger.warning("Metadata not found at %s — returning empty results", self.metadata_path)
