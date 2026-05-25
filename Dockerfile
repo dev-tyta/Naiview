@@ -13,6 +13,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     curl \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 # ─── Python dependencies ─────────────────────
@@ -21,6 +22,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # ─── Download spaCy model ────────────────────
 RUN python -m spacy download en_core_web_sm
+
+# ─── Pre-download embedding model (bake into image, avoid cold-start HuggingFace pull) ───
+ENV HF_HOME=/root/.cache/huggingface
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-base-en-v1.5')"
 
 # ─── Application code ────────────────────────
 COPY naijareview/ naijareview/
