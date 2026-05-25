@@ -59,19 +59,22 @@ function PaperPage({ navigate, vibe }) {
     {
       title: "Technical Architecture Document",
       desc: "Full internal engineering spec — every tool, skill, node, and schema defined.",
-      size: "2.4 MB · PDF",
+      size: "87 KB · Markdown",
+      link: "https://raw.githubusercontent.com/dev-tyta/Naiview/main/docs/TECHNICAL_ARCHITECTURE.md",
       icon: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>),
     },
     {
       title: "Dataset Strategy & Sources",
       desc: "Three-layer data strategy: Yelp + Amazon backbone, AfriSenti calibration, synthetic augmentation.",
-      size: "1.8 MB · PDF",
+      size: "7.1 KB · Markdown",
+      link: "https://raw.githubusercontent.com/dev-tyta/Naiview/main/docs/DATASET_STRATEGY.md",
       icon: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>),
     },
     {
       title: "Evaluation Results",
       desc: "ROUGE-L, BERTScore, Rating MAE, Naija Vibe Score, and ablation breakdown.",
-      size: "1.1 MB · PDF",
+      size: "8.4 KB · Markdown",
+      link: "https://raw.githubusercontent.com/dev-tyta/Naiview/main/docs/EVALUATION_RESULTS.md",
       icon: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 3v18h18"/><rect x="6" y="11" width="3" height="7"/><rect x="11" y="8" width="3" height="10"/><rect x="16" y="13" width="3" height="5"/></svg>),
     },
   ];
@@ -165,10 +168,10 @@ function PaperPage({ navigate, vibe }) {
                 <div className="res-desc">{r.desc}</div>
                 <div className="res-meta">
                   <span className="mono dim" style={{ fontSize: 11 }}>{r.size}</span>
-                  <button className="btn btn-sm">
+                  <a href={r.link} target="_blank" rel="noopener noreferrer" className="btn btn-sm" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Download
-                  </button>
+                  </a>
                 </div>
               </div>
             ))}

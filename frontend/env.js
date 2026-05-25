@@ -7,10 +7,10 @@
 // demoMode: false → always hit the real API (fail loudly)
 
 window.__NAIVIEW_CONFIG__ = {
-  apiBaseUrl: "http://localhost:9000",
+  apiBaseUrl: "https://naiview-production.up.railway.app",
   demoMode: true,
 
-  // Solution paper Drive links — paste your Google Drive share URLs here
-  paperLinkA: "",   // Task A: Review Generation paper
-  paperLinkB: "",   // Task B: Recommendation paper
+  // Solution paper Drive links
+  paperLinkA: "https://drive.google.com/file/d/1V1i6cJk-g27ubXJcRL-k6-sUOe-vE31p/view?usp=drivesdk",
+  paperLinkB: "https://drive.google.com/file/d/1-Z4ehj0DYbq1uzDF832UKuIbgMpfyUyu/view?usp=drivesdk",
 };

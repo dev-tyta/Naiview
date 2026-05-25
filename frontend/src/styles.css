@@ -61,38 +61,192 @@
   --bg: #0D0E0C;
 }
 
-/* Light theme */
+/* ============================================================
+   Light theme — full token + component overrides
+   ============================================================ */
 [data-theme="light"] {
-  --bg: #F2F2F5;
+  --bg: #F0F0F4;
   --bg-elev: #FFFFFF;
   --surface: #FFFFFF;
-  --surface-2: #EBEBEF;
-  --border: #DDDDE3;
-  --border-strong: #C8C8D0;
-  --fg: #18181C;
-  --fg-dim: #44444C;
-  --fg-mute: #888892;
-  --fg-faint: #BBBBCC;
-  --shadow-soft: 0 1px 0 rgba(255,255,255,0.9) inset, 0 8px 24px rgba(0,0,0,0.06);
+  --surface-2: #EAEAEF;
+  --border: #DCDCE4;
+  --border-strong: #C0C0CC;
+  --fg: #14141A;
+  --fg-dim: #3A3A46;
+  --fg-mute: #7A7A88;
+  --fg-faint: #B8B8C8;
+
+  /* Tighter, warmer accent in light */
+  --teal-soft: rgba(0,196,160,0.12);
+  --teal-glow: rgba(0,196,160,0.3);
+  --amber-soft: rgba(220,148,20,0.12);
+  --amber-glow: rgba(220,148,20,0.3);
+  --lavender-soft: rgba(120,108,196,0.12);
+  --rose-soft: rgba(196,60,80,0.1);
+
+  /* Light shadows */
+  --shadow-soft: 0 1px 0 rgba(255,255,255,1) inset, 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+  --shadow-card-hover: 0 4px 20px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+  --glow-teal: 0 0 0 1px var(--teal-soft), 0 0 20px var(--teal-glow);
 }
 
+/* Background */
 [data-theme="light"] body {
   background:
-    radial-gradient(ellipse 1400px 700px at 15% -5%, rgba(0,212,170,0.035), transparent 65%),
-    radial-gradient(ellipse 900px 600px at 88% 8%, rgba(139,126,200,0.03), transparent 60%),
+    radial-gradient(ellipse 1200px 600px at 10% -10%, rgba(0,196,160,0.06), transparent 60%),
+    radial-gradient(ellipse 800px 500px at 90% 5%, rgba(120,108,196,0.05), transparent 55%),
     var(--bg);
 }
 
+/* Dot watermark — subtle dark dots on light bg */
 [data-theme="light"] body::before {
-  background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.055) 1px, transparent 0);
-  opacity: 0.7;
+  background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.06) 1px, transparent 0);
+  opacity: 0.6;
 }
 
-[data-theme="light"] ::-webkit-scrollbar-track { background: #E8E8EC; }
-[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--border-strong); border-color: #E8E8EC; }
+/* Scrollbar */
+[data-theme="light"] ::-webkit-scrollbar-track { background: #E4E4EA; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: #C0C0CC; border-color: #E4E4EA; }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: var(--teal); }
 
-/* Light + Naija Vibe */
-[data-theme="light"][data-vibe="on"] { --bg: #F2F2EE; }
+/* Cards — white surface with real shadow */
+[data-theme="light"] .card {
+  background: #FFFFFF;
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
+  background-image: none;
+}
+[data-theme="light"] .card:hover,
+[data-theme="light"] .card-hover:hover {
+  box-shadow: var(--shadow-card-hover), 0 0 0 1px var(--teal-soft);
+}
+
+/* Glass card — frosted white instead of frosted dark */
+[data-theme="light"] .card-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-color: rgba(220, 220, 228, 0.9);
+  box-shadow: var(--shadow-card);
+}
+
+/* Buttons */
+[data-theme="light"] .btn {
+  background: #FFFFFF;
+  border-color: var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+[data-theme="light"] .btn:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+[data-theme="light"] .btn-primary {
+  background: var(--teal);
+  border-color: var(--teal);
+  box-shadow: 0 2px 8px rgba(0,196,160,0.3);
+}
+[data-theme="light"] .btn-primary:hover:not(:disabled) {
+  box-shadow: 0 4px 16px rgba(0,196,160,0.4);
+}
+[data-theme="light"] .btn-ghost {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Nav */
+[data-theme="light"] .nav {
+  background: rgba(240, 240, 244, 0.88);
+  border-bottom-color: var(--border);
+}
+
+/* Inputs */
+[data-theme="light"] .input,
+[data-theme="light"] .textarea,
+[data-theme="light"] .select {
+  background: #FFFFFF;
+  border-color: var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) inset;
+}
+[data-theme="light"] .input:focus,
+[data-theme="light"] .textarea:focus,
+[data-theme="light"] .select:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0,196,160,0.15), 0 1px 3px rgba(0,0,0,0.05) inset;
+}
+
+/* Chips */
+[data-theme="light"] .chip {
+  background: #FFFFFF;
+  border-color: var(--border);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+[data-theme="light"] .chip.high { background: rgba(0,196,160,0.08); border-color: rgba(0,196,160,0.3); }
+[data-theme="light"] .chip.med  { background: rgba(220,148,20,0.08); border-color: rgba(220,148,20,0.3); }
+[data-theme="light"] .chip.low  { background: rgba(196,60,80,0.08);  border-color: rgba(196,60,80,0.3); }
+[data-theme="light"] .chip.lav  { background: rgba(120,108,196,0.08); border-color: rgba(120,108,196,0.3); }
+
+/* Toggle track */
+[data-theme="light"] .toggle-track {
+  background: #E8E8EE;
+  border-color: var(--border);
+}
+[data-theme="light"] .toggle-thumb { background: #A0A0B0; }
+[data-theme="light"] .toggle[data-on="true"] .toggle-track {
+  background: rgba(220,148,20,0.15);
+}
+
+/* Proof cards */
+[data-theme="light"] .proof-card {
+  background: #FFFFFF;
+  box-shadow: var(--shadow-card);
+  background-image: none;
+}
+[data-theme="light"] .proof-card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Proof section tint */
+[data-theme="light"] .proof-section::before {
+  background: linear-gradient(180deg, transparent 0%, rgba(0,196,160,0.04) 50%, transparent 100%);
+}
+
+/* Judges path */
+[data-theme="light"] .judges-path {
+  background: #FFFFFF;
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
+}
+
+/* Error banner */
+[data-theme="light"] .error-banner {
+  background: rgba(196,60,80,0.07);
+  border-color: rgba(196,60,80,0.25);
+}
+
+/* Skeleton shimmer */
+[data-theme="light"] .skeleton-line {
+  background: linear-gradient(
+    90deg,
+    #E8E8EE 0%,
+    #D8D8E2 50%,
+    #E8E8EE 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Stars */
+[data-theme="light"] .star { color: #D8D8E0; }
+
+/* Naija Vibe + light */
+[data-theme="light"][data-vibe="on"] {
+  --bg: #F4F2EC;
+  --bg-elev: #FDFCF8;
+  --surface: #FDFCF8;
+  --surface-2: #EEEADF;
+  --border: #E0DAD0;
+}
 
 /* ============================================================
    Reset & Base

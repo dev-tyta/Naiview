@@ -24,8 +24,7 @@ RUN python -m spacy download en_core_web_sm
 
 # ─── Application code ────────────────────────
 COPY naijareview/ naijareview/
-COPY data/phrase_library/ data/phrase_library/
-COPY data/taxonomy.yaml data/taxonomy.yaml
+COPY data/ data/
 
 EXPOSE 9000
 

@@ -2,14 +2,15 @@
 
 const { useState, useEffect } = React;
 
-// Baseline values are TF-IDF / simple collaborative filter (no cultural pipeline)
+// Real numbers from held-out ablation eval (n=30, seed=42, 2026-05-24)
+// Baseline = direct Gemini Flash, no fingerprint, no NLM, no Abeg check
 const DEMO_METRICS = [
-  { key: "rouge",  label: "ROUGE-L",         value: 0.42, baseline: 0.31, hint: "Lexical overlap with human reference reviews" },
-  { key: "bert",   label: "BERTScore",        value: 0.78, baseline: 0.69, hint: "Semantic similarity to human-written output" },
-  { key: "rmse",   label: "Rating MAE",       value: 0.61, baseline: 0.89, hint: "Star prediction error — lower is better", invert: true },
-  { key: "ndcg",   label: "NDCG@10",          value: 0.74, baseline: 0.58, hint: "Ranking quality at top-10 recommendations" },
-  { key: "vibe",   label: "Naija Vibe Score", value: 0.81, baseline: 0.32, hint: "Cultural authenticity — avg Abeg score across test set" },
-  { key: "human",  label: "Human Eval",       value: 0.87, baseline: 0.71, hint: "Preference rate · pilot cohort · 12 native speakers" },
+  { key: "rouge",  label: "ROUGE-L",         value: 0.119, baseline: 0.064, hint: "Lexical overlap with human-written Nigerian reviews · +86% vs baseline" },
+  { key: "bert",   label: "BERTScore-F1",    value: 0.814, baseline: 0.826, hint: "Semantic similarity via contextual embeddings (roberta-large)" },
+  { key: "rmse",   label: "Rating MAE",       value: 1.167, baseline: 1.000, hint: "Star prediction error — lower is better", invert: true },
+  { key: "ndcg",   label: "Task B Confidence", value: 0.701, baseline: 0.000, hint: "Retrieval confidence score — fingerprint-backed vs generic baseline" },
+  { key: "vibe",   label: "Naija Vibe Score", value: 0.925, baseline: 0.352, hint: "Abeg Score on Naija-tagged users · 0.40×auth + 0.35×acc + 0.25×persona · +163% vs baseline" },
+  { key: "human",  label: "Completion Rate",  value: 1.000, baseline: 1.000, hint: "Task B: 100% recommendation completion — no dropped requests across all variants" },
 ];
 
 // /admin/results returns task_a.<variant> = metrics dict from JSON file.
@@ -35,9 +36,9 @@ function _parseApiMetrics(data) {
   const divVal     = _m(b, "diversity");
 
   // Baseline values (for the progress bars)
-  const rougeBase  = _m(baselineA, "rouge_l")    ?? 0.31;
-  const bertBase   = _m(baselineA, "bertscore_f1") ?? 0.69;
-  const maeBase    = _m(baselineA, "rating_mae")  ?? 1.89;
+  const rougeBase  = _m(baselineA, "rouge_l")       ?? 0.064;
+  const bertBase   = _m(baselineA, "bertscore_f1")  ?? 0.826;
+  const maeBase    = _m(baselineA, "rating_mae")    ?? 1.000;
 
   if (rougeVal == null && bertVal == null) return null;
 

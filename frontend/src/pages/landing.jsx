@@ -111,14 +111,14 @@ function Landing({ navigate, vibe }) {
         <div className="container">
           <div className="proof-eyebrow-row fade-in">
             <span className="eyebrow">Evaluation Results</span>
-            <span className="mono dim" style={{ fontSize: 11 }}>vs non-cultural baseline · 500 sample held-out test set</span>
+            <span className="mono dim" style={{ fontSize: 11 }}>vs direct-LLM baseline · n=30 held-out · seed 42 · 2026-05-24</span>
           </div>
           <div className="proof-grid fade-in-d1">
             {[
-              { num: "+35%",  color: "var(--teal)",     label: "ROUGE-L",          detail: "Lexical overlap with human-written Nigerian reviews", base: "baseline 0.31" },
-              { num: "0.81",  color: "var(--amber)",    label: "Naija Vibe Score", detail: "Average Abeg Score across test set — cultural authenticity", base: "baseline 0.32" },
-              { num: "78%",   color: "var(--teal)",     label: "Human Preference", detail: "Native speakers chose Naija Vibe Mode in blind A/B", base: "12 evaluators · 4 regions" },
-              { num: "+28%",  color: "var(--lavender)", label: "NDCG@10",          detail: "Recommendation ranking quality with cultural reranker", base: "baseline 0.58" },
+              { num: "+86%",  color: "var(--teal)",     label: "ROUGE-L",          detail: "Lexical overlap with human-written Nigerian reviews", base: "full 0.119 vs baseline 0.064" },
+              { num: "0.925", color: "var(--amber)",    label: "Naija Vibe Score", detail: "Abeg Score on naija-tagged users — cultural authenticity", base: "baseline 0.352 · +163%" },
+              { num: "100%",  color: "var(--teal)",     label: "Completion Rate",  detail: "Task B always returns a full recommendation list", base: "zero dropped requests" },
+              { num: "0.701", color: "var(--lavender)", label: "Rec Confidence",   detail: "Fingerprint-backed retrieval confidence score", base: "baseline 0.000 — no model" },
             ].map(m => (
               <div key={m.label} className="proof-card" style={{ "--proof-color": m.color }}>
                 <div className="proof-num" style={{ color: m.color }}>{m.num}</div>
