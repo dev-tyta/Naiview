@@ -178,21 +178,39 @@ def _llm_fallback_candidates(query: str, fp, persona, naija: bool) -> list:
         fp_summary = f"User prefers: {persona.food_preference}."
 
     register = "casual Naija tone" if naija else "friendly English"
+    # 3 items, short description (≤15 words) keeps response well under 1000 tokens
     prompt = (
         f"You are a Nigerian business recommendation engine.\n"
         f"Query: {query}\n"
         f"{fp_summary}\n"
-        f"Generate 5 realistic Nigerian business recommendations relevant to the query.\n"
-        f"Use {register} for descriptions.\n"
-        f"Return ONLY valid JSON with this exact structure:\n"
-        '{"items": [{"item_id": "llm_1", "name": "...", "category": "...", '
-        '"description": "...", "avg_rating": 4.2, "review_count": 150}]}'
+        f"Generate exactly 3 realistic Nigerian business recommendations.\n"
+        f"Use {register}. Keep each description under 15 words.\n"
+        f"Return ONLY this JSON (no extra text):\n"
+        '{"items": [{"item_id": "llm_1", "name": "Business Name", "category": "Category", '
+        '"description": "Short description here.", "avg_rating": 4.2, "review_count": 150}, '
+        '{"item_id": "llm_2", "name": "Business Name", "category": "Category", '
+        '"description": "Short description here.", "avg_rating": 4.0, "review_count": 80}, '
+        '{"item_id": "llm_3", "name": "Business Name", "category": "Category", '
+        '"description": "Short description here.", "avg_rating": 4.5, "review_count": 200}]}'
     )
     try:
-        raw = _router.call_with_retry("utility", prompt, max_tokens=600)
+        raw = _router.call_with_retry("utility", prompt, max_tokens=1200)
         cleaned = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
+        # Try full parse first
         m = re.search(r"\{.*\}", cleaned, re.DOTALL)
-        data = _json.loads(m.group()) if m else _json.loads(cleaned)
+        blob = m.group() if m else cleaned
+        try:
+            data = _json.loads(blob)
+        except _json.JSONDecodeError:
+            # Partial response: extract complete item objects individually
+            parsed_items = []
+            for b in re.findall(r'\{[^{}]*"item_id"[^{}]*\}', blob, re.DOTALL):
+                try:
+                    parsed_items.append(_json.loads(b))
+                except _json.JSONDecodeError:
+                    pass
+            data = {"items": parsed_items}
+
         items = []
         for i, it in enumerate(data.get("items", [])[:8]):
             items.append(Item(
