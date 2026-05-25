@@ -166,26 +166,81 @@ def bootstrap_fingerprint(state: "TaskBState") -> "TaskBState":
         return _trace(state, "bootstrap_fingerprint", t0, "fallback fingerprint", "error")
 
 
+def _llm_fallback_candidates(query: str, fp, persona, naija: bool) -> list:
+    """Generate plausible Nigerian Item objects via LLM when FAISS is unavailable."""
+    from naijareview.schemas.item import Item
+    import re, json as _json
+
+    fp_summary = ""
+    if fp and fp.topic_focus:
+        fp_summary = f"User likes: {', '.join(fp.topic_focus[:4])}."
+    elif persona and persona.food_preference:
+        fp_summary = f"User prefers: {persona.food_preference}."
+
+    register = "casual Naija tone" if naija else "friendly English"
+    prompt = (
+        f"You are a Nigerian business recommendation engine.\n"
+        f"Query: {query}\n"
+        f"{fp_summary}\n"
+        f"Generate 5 realistic Nigerian business recommendations relevant to the query.\n"
+        f"Use {register} for descriptions.\n"
+        f"Return ONLY valid JSON with this exact structure:\n"
+        '{"items": [{"item_id": "llm_1", "name": "...", "category": "...", '
+        '"description": "...", "avg_rating": 4.2, "review_count": 150}]}'
+    )
+    try:
+        raw = _router.call_with_retry("utility", prompt, max_tokens=600)
+        cleaned = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
+        m = re.search(r"\{.*\}", cleaned, re.DOTALL)
+        data = _json.loads(m.group()) if m else _json.loads(cleaned)
+        items = []
+        for i, it in enumerate(data.get("items", [])[:8]):
+            items.append(Item(
+                item_id=it.get("item_id", f"llm_{i+1}"),
+                name=it.get("name", "Unknown"),
+                category=it.get("category", "General"),
+                description=it.get("description"),
+                avg_rating=float(it.get("avg_rating", 4.0)),
+                review_count=int(it.get("review_count", 50)),
+            ))
+        return items
+    except Exception as llm_exc:
+        logger.warning("LLM fallback candidate generation failed: %s", llm_exc)
+        return []
+
+
 def retrieve_candidates(state: "TaskBState") -> "TaskBState":
     t0 = _ts()
+    fp = state.get("fingerprint")
+    persona = state.get("cold_start_persona")
+    query = state.get("context_query", "")
+    naija = state.get("naija_vibe_mode", False)
+
     try:
         from naijareview.tools.retrieval import retrieve_candidates_hybrid
-        fp = state.get("fingerprint")
-        persona = state.get("cold_start_persona")
-        query = state.get("context_query", "")
-
         candidates = retrieve_candidates_hybrid.invoke({
             "query": query,
             "fingerprint": fp,
             "cold_start_persona": persona,
             "top_k": 20,
         })
-        state = {**state, "candidate_pool": candidates}
-        return _trace(state, "retrieve_candidates", t0, f"{len(candidates)} candidates")
+        if candidates:
+            state = {**state, "candidate_pool": candidates}
+            return _trace(state, "retrieve_candidates", t0, f"{len(candidates)} candidates")
+        # Empty result — fall through to LLM fallback
+        logger.warning("retrieve_candidates: hybrid returned 0 results, trying LLM fallback")
     except Exception as exc:
-        logger.warning("retrieve_candidates failed: %s", exc)
-        state = append_error({**state, "candidate_pool": []}, f"retrieve_candidates: {exc}")
-        return _trace(state, "retrieve_candidates", t0, "retrieval failed", "error")
+        logger.warning("retrieve_candidates failed: %s — trying LLM fallback", exc)
+        state = append_error(state, f"retrieve_candidates: {exc}")
+
+    # LLM fallback: generate candidates directly when FAISS/BM25 unavailable
+    fallback = _llm_fallback_candidates(query, fp, persona, naija)
+    if fallback:
+        state = {**state, "candidate_pool": fallback}
+        return _trace(state, "retrieve_candidates", t0, f"LLM fallback: {len(fallback)} candidates", "fallback")
+
+    state = {**state, "candidate_pool": []}
+    return _trace(state, "retrieve_candidates", t0, "retrieval failed — no candidates", "error")
 
 
 def rerank(state: "TaskBState") -> "TaskBState":
@@ -196,8 +251,8 @@ def rerank(state: "TaskBState") -> "TaskBState":
         fp = state.get("fingerprint")
         query = state.get("context_query", "")
 
-        if not candidates or fp is None:
-            raise ValueError("no candidates or fingerprint")
+        if not candidates:
+            raise ValueError("no candidates")
 
         ranked = rerank_candidates.invoke({
             "candidates": candidates,
@@ -273,14 +328,17 @@ def generate_explanations(state: "TaskBState") -> "TaskBState":
         region = state.get("region_profile")
         region_name = region.region if region else "Unknown"
 
-        if not top5 or fp is None:
-            raise ValueError("no candidates or fingerprint")
+        if not top5:
+            raise ValueError("no candidates")
 
-        topic_str = ", ".join(fp.topic_focus) if fp.topic_focus else "general"
-        fp_summary = (
-            f"Likes: {topic_str}. Style: {fp.emotional_style}. "
-            f"Generosity: {fp.generosity_score:.2f}. Slang index: {fp.naija_slang_index:.2f}."
-        )
+        if fp is not None:
+            topic_str = ", ".join(fp.topic_focus) if fp.topic_focus else "general"
+            fp_summary = (
+                f"Likes: {topic_str}. Style: {fp.emotional_style}. "
+                f"Generosity: {fp.generosity_score:.2f}. Slang index: {fp.naija_slang_index:.2f}."
+            )
+        else:
+            fp_summary = f"Query: {state.get('context_query', 'Nigerian recommendations')}"
 
         items_block = "\n".join(
             f"[{ri.rank}] {ri.item.name} ({ri.item.nigerian_category or ri.item.category}) "
@@ -319,7 +377,7 @@ def generate_explanations(state: "TaskBState") -> "TaskBState":
                 item=ri.item,
                 rank=ri.rank,
                 explanation=exp,
-                alignment_dimensions=fp.topic_focus[:3],
+                alignment_dimensions=fp.topic_focus[:3] if fp else [],
             ))
 
         state = {**state, "recommendations": recs}

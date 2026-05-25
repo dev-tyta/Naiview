@@ -2,17 +2,84 @@
 
 const { useState, useEffect, useRef, useCallback } = React;
 
-const DEMO_COLD_START = [
-  "Omo, welcome! Quick one — what kind of food do you normally enjoy?",
-  "Nice! Are you someone that values taste above everything, or does price/value matter more?",
-  "Got you. Last one — do you prefer busy lively spots or quieter places?",
-];
+const CS_OPENER = {
+  pidgin: "Hey! Welcome 🎉 Quick one — wetin you dey look for today? Food, salon, tech, shopping, anything — just tell me!",
+  en:     "Hey, welcome! Quick question — what are you looking for today? Could be food, a salon, shopping, tech, or anything else — just tell me!",
+};
 
-const DEMO_COLD_START_EN = [
-  "Welcome! Quick question — what kind of food do you normally enjoy?",
-  "Great! Do you value taste above everything, or does price/value matter more?",
-  "Got it. Last one — do you prefer busy, lively spots or quieter places?",
-];
+const CS_FOLLOWUPS = {
+  pidgin: {
+    Food: [
+      "Nice one! When you go out, do you care more about the taste being top-notch, getting good value for your money, or a balance of both?",
+      "Last one! You prefer somewhere lively and buzzing, or quiet and chill? And budget-wise — affordable spots, mid-range, or you dey ball? 😄",
+    ],
+    "Salon & Spa": [
+      "Nice! You value quality finish or value for your money more? Or balance of both?",
+      "Last one! You prefer a busy, trendy spot or somewhere calm and relaxed? Budget — affordable, mid-range, or you dey ball? 😄",
+    ],
+    Tech: [
+      "Nice! Quality and brand name matter pass, or value for money?",
+      "Last one! You prefer established stores or cool new shops? Budget — low, mid-range, or premium? 😄",
+    ],
+    Shopping: [
+      "Nice! Quality of items or best price — which one matter more? Or you dey look for both?",
+      "Last one! You prefer big malls or local markets? Budget — affordable, mid-range, or premium? 😄",
+    ],
+    "Hotels & Travel": [
+      "Nice! Comfort and facilities or value for money — which matter more?",
+      "Last one! You prefer lively hotel areas or quiet, peaceful spots? Budget — budget-friendly, mid-range, or luxury? 😄",
+    ],
+    Entertainment: [
+      "Nice! Quality of experience or affordability — which one you prioritise?",
+      "Last one! You prefer big popular venues or small intimate spots? Budget — affordable, mid-range, or premium? 😄",
+    ],
+    default: [
+      "Nice! Quality or value for money — which one matter more to you? Or balance of both?",
+      "Last one! You prefer popular, well-known places or hidden gems? Budget — affordable, mid-range, or premium? 😄",
+    ],
+  },
+  en: {
+    Food: [
+      "Nice! When dining out, do you tend to prioritise food quality, value for money, or a balance of both?",
+      "Last one! Do you prefer a lively atmosphere or somewhere quiet and relaxed? And budget-wise — affordable, mid-range, or happy to splurge?",
+    ],
+    "Salon & Spa": [
+      "Nice! Do you prioritise quality of service, value for money, or a balance of both?",
+      "Last one! Do you prefer a trendy, busy salon or somewhere calm and private? Budget-wise — affordable, mid-range, or happy to splurge?",
+    ],
+    Tech: [
+      "Nice! Do you prioritise brand quality, value for money, or a balance of both?",
+      "Last one! Do you prefer well-established stores or newer, specialised shops? Budget — affordable, mid-range, or premium?",
+    ],
+    Shopping: [
+      "Nice! Do you prioritise item quality or getting the best price? Or a mix of both?",
+      "Last one! Do you prefer big malls or local open markets? Budget — affordable, mid-range, or premium?",
+    ],
+    "Hotels & Travel": [
+      "Nice! Do you prioritise comfort and facilities or value for money?",
+      "Last one! Do you prefer lively hotel areas or somewhere peaceful and quiet? Budget — budget-friendly, mid-range, or luxury?",
+    ],
+    Entertainment: [
+      "Nice! Do you prioritise the quality of the experience or affordability?",
+      "Last one! Big popular venues or smaller, more intimate spots? Budget — affordable, mid-range, or premium?",
+    ],
+    default: [
+      "Nice! Do you prioritise quality, value for money, or a balance of both?",
+      "Last one! Do you prefer popular, well-known places or hidden gems? Budget — affordable, mid-range, or happy to splurge?",
+    ],
+  },
+};
+
+function detectCategory(text) {
+  const t = text.toLowerCase();
+  if (/food|eat|restaurant|jollof|suya|buka|lunch|dinner|cuisine|amala|eba|puff|shawarma|pepper soup|fried rice/.test(t)) return "Food";
+  if (/salon|hair|nail|spa|facial|barber|cut|style|beauty|lash|brow|wax|weave/.test(t)) return "Salon & Spa";
+  if (/tech|phone|laptop|gadget|electronic|computer|accessory|airpod|charger|iphone|android/.test(t)) return "Tech";
+  if (/hotel|stay|lodge|accommodation|room|airbnb|travel|trip/.test(t)) return "Hotels & Travel";
+  if (/shop|market|cloth|fashion|buy|store|boutique|sneaker|shoe|bag|wear/.test(t)) return "Shopping";
+  if (/entertain|club|bar|movie|cinema|hangout|lounge|leisure|concert|show/.test(t)) return "Entertainment";
+  return null;
+}
 
 const DEMO_RECS = [
   {
@@ -20,33 +87,33 @@ const DEMO_RECS = [
     cat: "Food · Lagos",
     match: 94,
     confidence: 0.91,
-    reason: "Your jollof rating history says you'll love this one. Same price tier as your usual spots, but the portions are bigger.",
-    reasonVibe: "Based on your love for jollof and your weekend brunch pattern, this one go sweet you. Portions plenty, price still dey reasonable.",
+    reason: "Matches your preference for high-quality local food and busy Lekki venues. Frequent reviewer of similar bukaterias.",
+    reasonVibe: "Based on your love for correct amala and your weekend vibe for Lekki, this one go sweet you. Portions plenty, price still dey reasonable.",
   },
   {
     name: "Buka Steki, Surulere",
     cat: "Food · Lagos",
     match: 88,
     confidence: 0.86,
-    reason: "Budget-friendly with generous portions — matches your value-conscious pattern across 14 prior reviews.",
-    reasonVibe: "Budget-friendly and the portions no be small thing. E match your style — quality food without break bank.",
+    reason: "Consistent with your value-conscious pattern and interest in authentic Surulere dining experiences.",
+    reasonVibe: "Budget-friendly and the portions no be small thing. E match your style for Surulere — quality food without break bank.",
   },
   {
     name: "Nkoyo, Ikoyi",
     cat: "Food · Lagos · Premium",
     match: 82,
     confidence: 0.79,
-    reason: "A step up from your usual mid-tier picks. You've rated 3 special-occasion spots highly in the past 6 months.",
-    reasonVibe: "Step up from your regular spots — special occasion vibes. You don dey rate premium places high lately, this one fit your level.",
+    reason: "A premium cultural experience that aligns with your interest in high-standard Nigerian cuisine and professional service.",
+    reasonVibe: "Step up from your regular spots — special occasion vibes for Ikoyi. You don dey rate premium places high lately, this one fit your level.",
   },
 ];
 
 const DEMO_TRACE = [
-  { step: 1, title: "Pulled user history", detail: "14 prior food reviews · last 90 days" },
-  { step: 2, title: "Computed taste vector", detail: "Topic affinity: jollof, grills, Lagos venues" },
-  { step: 3, title: "FAISS retrieval", detail: "Top 50 candidates from item index" },
-  { step: 4, title: "Cultural rerank", detail: "Boosted Naija-tone matches · diversity constraint applied" },
-  { step: 5, title: "Generated reasoning", detail: "Register selected by vibe mode" },
+  { step: 1, title: "User history loaded", detail: "Behavioural fingerprint retrieved from memory" },
+  { step: 2, title: "Hybrid retrieval", detail: "BM25 (0.4) + FAISS (0.6) candidates generated" },
+  { step: 3, title: "Chain-of-thought rerank", detail: "Gemini 2.5 Pro filtered 20 candidates for cultural alignment" },
+  { step: 4, title: "Diversity constraint", detail: "Category spread enforced (diversity score: 0.74)" },
+  { step: 5, title: "Explanation authored", detail: "Register matched to vibe mode (Pidgin/English)" },
 ];
 
 function RecsOutput({ recs, trace, vibe, diversity, onRefresh, t }) {
@@ -148,10 +215,10 @@ function RecsOutput({ recs, trace, vibe, diversity, onRefresh, t }) {
 }
 
 const REC_SCENARIOS = [
-  { id: "lagos-food",  chip: "Lagos Foodie",     persona: "ChiomaNwankwo92", category: "Food",          mood: "somewhere lively for Saturday night with my squad in Lagos" },
-  { id: "abuja-tech",  chip: "Abuja Tech Buyer",  persona: "AdekunleRoads",   category: "Electronics",   mood: "latest smartphone or laptop under ₦500k, best value" },
-  { id: "ph-books",    chip: "PH Book Lover",     persona: "FunkeAdebayo",    category: "Books",         mood: "something deep, Nigerian, that hits different" },
-  { id: "lagos-exp",   chip: "Lagos Experience",  persona: "EmekaLagosBoy",   category: "Entertainment", mood: "premium experience for a special occasion, Ikoyi or VI" },
+  { id: "lekki-amala", chip: "Lekki Amala",    persona: "Tayo_Lekki_Vibe", category: "Food",          mood: "somewhere lively for Saturday night with my squad in Lekki" },
+  { id: "abuja-buka",  chip: "Abuja Lunch",   persona: "Wuse2_Pro",       category: "Food",          mood: "quick and reliable lunch spot in Wuse 2" },
+  { id: "kano-tuwo",   chip: "Kano Gem",      persona: "Kano_Heritage",    category: "Food",         mood: "authentic Northern food wey taste like home" },
+  { id: "surulere-style", chip: "Surulere Salon", persona: "Surulere_Style", category: "Salon & Spa", mood: "clean and professional salon for a quick trim" },
 ];
 
 function TaskB({ vibe, setVibe }) {
@@ -173,9 +240,13 @@ function TaskB({ vibe, setVibe }) {
   const [turn, setTurn] = useState(0);
   const [userInput, setUserInput] = useState("");
   const [agentTyping, setAgentTyping] = useState(false);
+  const [inferredCategory, setInferredCategory] = useState(null);
   const chatRef = useRef(null);
 
-  const coldStartQuestions = vibe ? DEMO_COLD_START : DEMO_COLD_START_EN;
+  const getFollowups = useCallback((cat) => {
+    const lang = vibe ? CS_FOLLOWUPS.pidgin : CS_FOLLOWUPS.en;
+    return lang[cat] || lang.default;
+  }, [vibe]);
 
   const startColdStart = useCallback(() => {
     setChatLog([]);
@@ -183,9 +254,10 @@ function TaskB({ vibe, setVibe }) {
     setRecs(null);
     setTrace(null);
     setError(null);
+    setInferredCategory(null);
     setAgentTyping(true);
     setTimeout(() => {
-      setChatLog([{ role: "agent", text: coldStartQuestions[0] }]);
+      setChatLog([{ role: "agent", text: vibe ? CS_OPENER.pidgin : CS_OPENER.en }]);
       setAgentTyping(false);
     }, 700);
   }, [vibe]);
@@ -194,17 +266,9 @@ function TaskB({ vibe, setVibe }) {
     if (mode === "coldstart" && chatLog.length === 0) startColdStart();
   }, [mode]);
 
-  // Re-start cold start when vibe mode changes mid-conversation
+  // Restart when vibe toggles
   useEffect(() => {
-    if (mode === "coldstart" && chatLog.length > 0) {
-      const updated = chatLog.map((m, i) => {
-        if (m.role === "agent" && i < coldStartQuestions.length) {
-          return { ...m, text: coldStartQuestions[Math.floor(i / 2)] };
-        }
-        return m;
-      });
-      setChatLog(updated);
-    }
+    if (mode === "coldstart") startColdStart();
   }, [vibe]);
 
   useEffect(() => {
@@ -213,16 +277,28 @@ function TaskB({ vibe, setVibe }) {
 
   const sendUserMessage = useCallback(async () => {
     if (!userInput.trim()) return;
-    const newLog = [...chatLog, { role: "user", text: userInput }];
+    const answer = userInput.trim();
+    const newLog = [...chatLog, { role: "user", text: answer }];
     setChatLog(newLog);
     setUserInput("");
     const nextTurn = turn + 1;
-
     setAgentTyping(true);
 
-    if (nextTurn < coldStartQuestions.length) {
+    // After turn 0 (opener answered): infer category from user's reply
+    let resolvedCat = inferredCategory;
+    if (turn === 0) {
+      resolvedCat = detectCategory(answer);
+      setInferredCategory(resolvedCat);
+    }
+
+    const followups = getFollowups(resolvedCat);
+    const totalTurns = 1 + followups.length; // opener + 2 followups = 3 total
+
+    if (nextTurn < totalTurns) {
+      // followups are 0-indexed, nextTurn 1 → followups[0], nextTurn 2 → followups[1]
+      const nextQ = followups[nextTurn - 1];
       setTimeout(() => {
-        setChatLog([...newLog, { role: "agent", text: coldStartQuestions[nextTurn] }]);
+        setChatLog([...newLog, { role: "agent", text: nextQ }]);
         setTurn(nextTurn);
         setAgentTyping(false);
       }, 1100);
@@ -242,10 +318,13 @@ function TaskB({ vibe, setVibe }) {
           setDiversityScore(0.74);
         } else {
           try {
+            const userAnswers = newLog.filter(m => m.role === "user").map(m => m.text).join(". ");
             const data = await window.apiPost("/task-b/cold-start", {
               session_id: sessionStorage.getItem("naiview-session") || Math.random().toString(36).slice(2),
               turn_number: nextTurn,
               naija_vibe_mode: vibe,
+              category: resolvedCat || "General",
+              conversation_summary: userAnswers || undefined,
             });
             if (data.done && data.recommendations) {
               setRecs(data.recommendations);
@@ -258,7 +337,7 @@ function TaskB({ vibe, setVibe }) {
         }
       }, 1100);
     }
-  }, [chatLog, turn, userInput, vibe, coldStartQuestions]);
+  }, [chatLog, turn, userInput, vibe, inferredCategory, getFollowups]);
 
   const generateRecs = useCallback(async () => {
     setLoading(true);

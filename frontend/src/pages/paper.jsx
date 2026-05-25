@@ -94,7 +94,7 @@ function PaperPage({ navigate, vibe }) {
             <div className="cover-eyebrow">DSN × BCT · Hackathon 3.0</div>
             <h2>Naiview Intelligence: A Culturally-Aware LLM Agent System for Nigerian User Modelling and Recommendation</h2>
             <div style={{ marginTop: 24, color: 'var(--fg-mute)', fontSize: 13, lineHeight: 1.65 }}>
-              Two-task LangGraph agent. 7-dimensional behavioural fingerprint. Naija Vibe Checker with regeneration loop. Hybrid retrieval and cold-start conversation. ROUGE-L +86%, Naija Vibe Score 0.925, 100% completion rate.
+              Two-task LangGraph agent. 7-dimensional behavioural fingerprint. Naija Vibe Checker with regeneration loop. Hybrid retrieval and cold-start conversation. BERTScore 0.815, Naija Vibe Score 0.925, 100% completion rate.
             </div>
             <div className="cover-bottom">
               <div>TESTIMONY · AALIYAH · SHILOH</div>
@@ -140,7 +140,7 @@ function PaperPage({ navigate, vibe }) {
               label="Task A"
               tag="Review Generation"
               title="Culturally-Aware Nigerian Review Generation via LangGraph Agent"
-              desc="7-dimensional behavioural fingerprint, persona authoring, Naija Vibe Checker with regeneration loop, NLM register shifting. ROUGE-L +86% vs baseline, Abeg Score 0.925."
+              desc="7-dimensional behavioural fingerprint, persona authoring, Naija Vibe Checker with regeneration loop, NLM register shifting. BERTScore 0.815 vs baseline, Abeg Score 0.925."
               link={linkA}
             />
             <PaperCard

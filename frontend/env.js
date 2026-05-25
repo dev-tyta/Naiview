@@ -8,7 +8,7 @@
 
 window.__NAIVIEW_CONFIG__ = {
   apiBaseUrl: "https://naiview-production.up.railway.app",
-  demoMode: true,
+  demoMode: false,
 
   // Solution paper Drive links
   paperLinkA: "https://drive.google.com/file/d/1V1i6cJk-g27ubXJcRL-k6-sUOe-vE31p/view?usp=drivesdk",

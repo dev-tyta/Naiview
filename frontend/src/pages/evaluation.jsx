@@ -6,7 +6,7 @@ const { useState, useEffect } = React;
 // Baseline = direct Gemini Flash, no fingerprint, no NLM, no Abeg check
 const DEMO_METRICS = [
   { key: "rouge",  label: "ROUGE-L",         value: 0.119, baseline: 0.064, hint: "Lexical overlap with human-written Nigerian reviews · +86% vs baseline" },
-  { key: "bert",   label: "BERTScore-F1",    value: 0.814, baseline: 0.826, hint: "Semantic similarity via contextual embeddings (roberta-large)" },
+  { key: "bert",   label: "BERTScore-F1",    value: 0.815, baseline: 0.826, hint: "Semantic similarity via contextual embeddings (roberta-large)" },
   { key: "rmse",   label: "Rating MAE",       value: 1.167, baseline: 1.000, hint: "Star prediction error — lower is better", invert: true },
   { key: "ndcg",   label: "Task B Confidence", value: 0.701, baseline: 0.000, hint: "Retrieval confidence score — fingerprint-backed vs generic baseline" },
   { key: "vibe",   label: "Naija Vibe Score", value: 0.925, baseline: 0.352, hint: "Abeg Score on Naija-tagged users · 0.40×auth + 0.35×acc + 0.25×persona · +163% vs baseline" },
@@ -57,34 +57,34 @@ function _parseApiMetrics(data) {
 
 const COMPARISONS = [
   {
-    input: { user: "AdekunleRoads", item: "Kilimanjaro Restaurant, Wuse II, Abuja" },
-    generic: "The restaurant offers a pleasant dining experience with a diverse menu. The service is attentive and the ambiance is nice. I would recommend it for a casual dinner. Rating: 4/5",
-    naija: "Guy, Kilimanjaro no dey disappoint. The suya platter was fire — proper Abuja standard. Waiter dem sabi their work, no wahala. The only thing be say parking for Wuse II na war, but once you enter, e worth am. If you dey Abuja and you never go here, you dey owe yourself. 4 stars — would be 5 but make dem reduce that pepper small for the coleslaw 😂",
-    rating: 4,
-  },
-  {
-    input: { user: "ChiomaNwankwo92", item: "Mama Cass Restaurant, Victoria Island, Lagos" },
-    generic: "Had a pleasant meal at Mama Cass Restaurant on Victoria Island. The jollof rice was flavorful and well-prepared, though service could have been faster. Pricing was reasonable for the area. I would consider returning.",
-    naija: "Abeg, if you never chop for Mama Cass, you never start. The jollof rice hit different — proper party jollof vibes. Service was a bit slow sha, but the food make up for am. For VI price, e dey reasonable. I go come back with my squad next weekend. 4 stars because that AC need to work harder!",
-    rating: 4,
-  },
-  {
-    input: { user: "TundeGames", item: "Itel S25 Smartphone" },
-    generic: "The Itel S25 is a budget-friendly smartphone offering decent performance for everyday use. The camera quality is acceptable, the battery life is sufficient. A reasonable choice for users on a tight budget.",
-    naija: "For this price wey them dey sell am, the Itel S25 dey try sha. Battery na the main thing — e fit reach two days if you no dey play game too much. Camera no be the best but for WhatsApp picture, e do well. If you no get money for iPhone, this one fit hold body.",
-    rating: 3,
-  },
-  {
-    input: { user: "FunkeAdebayo", item: "Things Fall Apart by Chinua Achebe (Reread)" },
-    generic: "A profound classic that captures pre-colonial Igbo society with remarkable depth. The prose is accessible and the themes remain relevant. Highly recommended for readers interested in African literature.",
-    naija: "I read this book again, and it still hit me like the first time. Achebe no dey play — every chapter wey you read, you go feel say na your grandfather dey talk. For Naija reader, this book pass book, e be like family history. If you never read am, abeg start today.",
+    input: { user: "Tayo_Surulere_94", item: "Mama Chi's Buka, Lekki, Lagos" },
+    generic: "I heard good things about the amala at Mama Chi's Buka in Lekki, so I decided to visit. The food was good, especially the amala and the soup. The meat was also well-prepared and juicy. The prices are reasonable for the location. Although the space is small and can be warm, the quality of the food makes it worthwhile. I plan to return whenever I am in the area.",
+    naija: "Ah, Mama Chi's Buka for Lekki don scatter my head! I been dey hear about am for long, say their amala dey burst brain, but I no believe until I enter myself. Omo, the amala soft like cotton, and the ewedu and gbegiri? Chai! E reach bone. The meat wey dem put inside, big and juicy. And the price? E get value for money, I swear. Even though the place dey small and sometimes e dey hot small, the food make up for everything. This place don sweet me die. Na here I go always patronize whenever I dey Lekki side.",
     rating: 5,
   },
   {
-    input: { user: "EmekaLagosBoy", item: "Sundowner at The Wheatbaker, Ikoyi" },
-    generic: "An elegant venue with a sophisticated atmosphere. The cocktail selection is curated and the views are pleasant. Service is attentive. Suitable for a refined evening out.",
-    naija: "Wheatbaker rooftop na proper Lagos energy. Sun dey set, drinks dey cold, mix dey play — wetin person fit ask for again? Price no be small thing but you dey pay for the vibe, no be the alcohol. If you wan impress person, e dey work. Just no come with empty pocket abeg.",
+    input: { user: "Ikeja_Entertainer", item: "Mama Blessing Buka, Ikeja, Lagos" },
+    generic: "Mama Blessing in Ikeja is a good option for a meal. I visited after a long commute and found the food to be very satisfying. I ordered rice and stew with plantain. The ingredients were well-cooked and the flavors were good. The staff is friendly and welcoming. It is a budget-friendly choice for those in the Ikeja area. I enjoyed the meal and would recommend it.",
+    naija: "Omo, Mama Blessing for Ikeja? Na fire! I bin dey hungry die after I don dey inside traffic from Yaba, one okada man just tell me say make I try am. I say make I give am a try. Omo, see stew! See pepper! The thing scatter my mouth, but I no mind. E sweet me die. I chop rice and stew with plantain. The plantain soft, the rice dey well cooked, the stew? Oga na top tier be this. The woman sef dey smile, dey hail everybody. Na so e be o. If you dey find correct buka for Ikeja wey no go break your bank, enter Mama Blessing.",
     rating: 5,
+  },
+  {
+    input: { user: "Disappointed_Surulere", item: "Iya Basira's Buka, Surulere, Lagos" },
+    generic: "I visited Iya Basira's Buka in Surulere recently and was disappointed with the experience. The food was not fresh and seemed to have been sitting out for some time. The meat was tough and the overall environment was not very clean. Additionally, the service was quite poor and unwelcoming. For the price of ₦1500, I expected better quality. I do not recommend this location as there are better alternatives nearby.",
+    naija: "Ah, Iya Basira... I been tink say this place na better spot but honestly, I was quite disappointed. The amala was lukewarm, and the ewedu soup tasted like it had been sitting out for hours. The meat was tough and difficult to chew. The place was also quite dirty, with flies buzzing around. To top it off, the woman serving was quite rude. I paid ₦1500 for a plate I barely touched. I won't be returning anytime soon; there are much better bukateria options in Lagos.",
+    rating: 1,
+  },
+  {
+    input: { user: "Yaba_Techie", item: "Iya Sikira's Buka, Yaba, Lagos" },
+    generic: "I traveled to Yaba to try the pounded yam at Iya Sikira's, but the meal did not meet my expectations. The pounded yam was tough and difficult to eat, and the soup was watery and lacking flavor. I also had concerns about the cleanliness of the counter. The service was not friendly either. I feel like I wasted my time and money on this visit and do not plan to return.",
+    naija: "Ah, Iya Sikira's... where do I even begin? My friend told me this place dey sell correct pounded yam, so I trekked all the way from Lekki to Yaba in this Lagos traffic. Omo, the pounded yam was like rubber! E no soft at all. The egusi soup was watery and tasteless. And the worst part? I saw cockroach dey waka pass on top of the counter! Ewwww! I nearly vomited. The woman wey dey serve sef, she no even smile. This place no sweet me at all; I wasted my money and my time.",
+    rating: 2,
+  },
+  {
+    input: { user: "Gidi_Food_Lover", item: "Mama T's Buka, Surulere, Lagos" },
+    generic: "I visited Mama T's Buka in Surulere last week and had a good experience. Finding authentic food in Lagos can be difficult, but this restaurant is a solid choice. The efo riro and pounded yam were well-prepared with good seasoning. The portions are large and the pricing is very reasonable. Service was efficient despite the busy period. Although parking is limited, the food is worth the visit. I will return.",
+    naija: "I stumbled upon Mama T's Buka in Surulere last week, and I must say, it was a delightful experience. Finding good, authentic Nigerian food in Lagos can be a bit of a hit-or-miss, but this place definitely hits the mark. I ordered the efo riro with pounded yam, and the flavors were just right – not too salty, not too bland. The portion size was generous, and the prices are very reasonable. The service was quick and efficient, even during the lunchtime rush. The only slight downside is the limited parking space, but the food is worth it. I will definitely return.",
+    rating: 4,
   },
 ];
 

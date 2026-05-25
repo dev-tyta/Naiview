@@ -115,7 +115,7 @@ function Landing({ navigate, vibe }) {
           </div>
           <div className="proof-grid fade-in-d1">
             {[
-              { num: "+86%",  color: "var(--teal)",     label: "ROUGE-L",          detail: "Lexical overlap with human-written Nigerian reviews", base: "full 0.119 vs baseline 0.064" },
+              { num: "0.815", color: "var(--teal)",     label: "BERTScore-F1",     detail: "Semantic similarity maintained across registers", base: "High semantic fidelity · vs baseline 0.826" },
               { num: "0.925", color: "var(--amber)",    label: "Naija Vibe Score", detail: "Abeg Score on naija-tagged users — cultural authenticity", base: "baseline 0.352 · +163%" },
               { num: "100%",  color: "var(--teal)",     label: "Completion Rate",  detail: "Task B always returns a full recommendation list", base: "zero dropped requests" },
               { num: "0.701", color: "var(--lavender)", label: "Rec Confidence",   detail: "Fingerprint-backed retrieval confidence score", base: "baseline 0.000 — no model" },
@@ -154,10 +154,10 @@ function Landing({ navigate, vibe }) {
           <Reveal delay={200}>
             <div className="beat">
               <div className="beat-num">Beat 03</div>
-              A Lagos foodie who writes{" "}
-              <span className="tealtxt mono" style={{ fontSize: "0.7em" }}>"this jollof hit different — proper party vibes"</span>{" "}
+              A Lekki resident who writes{" "}
+              <span className="tealtxt mono" style={{ fontSize: "0.7em" }}>"Ah, Mama Chi's Buka for Lekki don scatter my head! Their amala dey burst brain..."</span>{" "}
               gets flattened into the same profile as someone in Ohio who writes{" "}
-              <span className="dim mono" style={{ fontSize: "0.7em" }}>"the food was great."</span>
+              <span className="dim mono" style={{ fontSize: "0.7em" }}>"I enjoyed the food here very much."</span>
             </div>
           </Reveal>
 
@@ -165,18 +165,18 @@ function Landing({ navigate, vibe }) {
             <div className="compare" role="region" aria-label="Comparison: Generic AI vs Naiview">
               <div className="compare-card generic">
                 <div className="compare-label">Generic AI</div>
-                <p>"The restaurant was good. The food was tasty and the service was acceptable. I would recommend it."</p>
+                <p>"The amala at Mama Chi's Buka in Lekki was good. The service was acceptable and the prices were fair. I would recommend visiting if you are in the area."</p>
                 <div className="row" style={{ marginTop: 16 }}>
-                  <Stars value={4} size={14}/>
-                  <span className="mono dim" style={{ fontSize: 11 }}>RATING 4.0</span>
+                  <Stars value={5} size={14}/>
+                  <span className="mono dim" style={{ fontSize: 11 }}>RATING 5.0</span>
                 </div>
               </div>
               <div className="compare-card naija">
                 <div className="compare-label">Naiview · Naija Vibe Mode</div>
-                <p>"Omo, the jollof hit different! Service slow small sha but the food make up for am. For VI price, e dey reasonable. I go come back with my squad."</p>
+                <p>"Ah, Mama Chi's Buka for Lekki don scatter my head! I been dey hear about am for long, say their amala dey burst brain... This place don sweet me die."</p>
                 <div className="row" style={{ marginTop: 16 }}>
-                  <Stars value={4} size={14}/>
-                  <span className="mono tealtxt" style={{ fontSize: 11 }}>VIBE 0.84 · CONF 0.87</span>
+                  <Stars value={5} size={14}/>
+                  <span className="mono tealtxt" style={{ fontSize: 11 }}>VIBE 0.92 · CONF 0.94</span>
                 </div>
               </div>
             </div>
@@ -210,10 +210,10 @@ function Landing({ navigate, vibe }) {
               <p className="sol-desc">Persona + product → realistic Nigerian-style review and rating, anchored to a 7-dimensional behavioural fingerprint.</p>
               <div className="sol-preview">
                 <div className="mono dim" style={{ fontSize: 10, marginBottom: 6 }}>· OUTPUT PREVIEW</div>
-                <div style={{ fontSize: 13, color: "var(--fg)", lineHeight: 1.5 }}>"Abeg, if you never chop for Mama Cass, you never start. The jollof rice hit different..."</div>
+                <div style={{ fontSize: 13, color: "var(--fg)", lineHeight: 1.5 }}>"Ah, Mama Chi's Buka for Lekki don scatter my head! Their amala dey burst brain..."</div>
                 <div className="row" style={{ marginTop: 12, justifyContent: "space-between" }}>
-                  <Stars value={4} size={12}/>
-                  <span className="chip high"><span className="chip-dot"></span> 0.87</span>
+                  <Stars value={5} size={12}/>
+                  <span className="chip high"><span className="chip-dot"></span> 0.94</span>
                 </div>
               </div>
               <button className="btn btn-sm" style={{ marginTop: 20 }} onClick={() => navigate("/task-a")}>
