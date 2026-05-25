@@ -1,36 +1,36 @@
-# ──────────────────────────────────────────────
-# NaijaReview Intelligence — API Container
-# ──────────────────────────────────────────────
-FROM python:3.12-slim AS base
+# # ──────────────────────────────────────────────
+# # NaijaReview Intelligence — API Container
+# # ──────────────────────────────────────────────
+# FROM python:3.12-slim AS base
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app
+# ENV PYTHONDONTWRITEBYTECODE=1 \
+#     PYTHONUNBUFFERED=1 \
+#     PYTHONPATH=/app
 
-WORKDIR /app
+# WORKDIR /app
 
-# ─── System dependencies ─────────────────────
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    curl \
-    libgomp1 \
-    && rm -rf /var/lib/apt/lists/*
+# # ─── System dependencies ─────────────────────
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     build-essential \
+#     curl \
+#     libgomp1 \
+#     && rm -rf /var/lib/apt/lists/*
 
-# ─── Python dependencies ─────────────────────
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+# # ─── Python dependencies ─────────────────────
+# COPY requirements.txt ./
+# RUN pip install --no-cache-dir -r requirements.txt
 
-# ─── Download spaCy model ────────────────────
-RUN python -m spacy download en_core_web_sm
+# # ─── Download spaCy model ────────────────────
+# RUN python -m spacy download en_core_web_sm
 
-# ─── Pre-download embedding model (bake into image, avoid cold-start HuggingFace pull) ───
-ENV HF_HOME=/root/.cache/huggingface
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-base-en-v1.5')"
+# # ─── Pre-download embedding model (bake into image, avoid cold-start HuggingFace pull) ───
+# ENV HF_HOME=/root/.cache/huggingface
+# RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-base-en-v1.5')"
 
-# ─── Application code ────────────────────────
-COPY naijareview/ naijareview/
-COPY data/ data/
+# # ─── Application code ────────────────────────
+# COPY naijareview/ naijareview/
+# COPY data/ data/
 
-EXPOSE 9000
+# EXPOSE 9000
 
-CMD ["uvicorn", "naijareview.api.main:app", "--host", "0.0.0.0", "--port", "9000"]
+# CMD ["uvicorn", "naijareview.api.main:app", "--host", "0.0.0.0", "--port", "9000"]
